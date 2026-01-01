@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقة المعلومات العامة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-bg: radial-gradient(circle at center, #2b1055 0%, #000000 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --accent: #f1c40f;
+            --text-color: #ffffff;
+            --btn-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --correct: #00b894;
+            --wrong: #d63031;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--main-bg);
+            color: var(--text-color);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+
+        /* Start Screen */
+        .logo {
+            width: 120px;
+            height: 120px;
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: var(--accent);
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent); }
+        p { color: #aaa; font-size: 1.1rem; }
+
+        /* Game Screen */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .question-card {
+            background: linear-gradient(180deg, rgba(40,40,90,0.9) 0%, rgba(20,20,50,0.9) 100%);
+            padding: 40px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--accent);
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+            .question-card { font-size: 1.2rem; padding: 20px; }
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Cairo', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .option-btn.correct {
+            background: var(--correct) !important;
+            border-color: var(--correct) !important;
+            box-shadow: 0 0 15px var(--correct);
+        }
+
+        .option-btn.wrong {
+            background: var(--wrong) !important;
+            border-color: var(--wrong) !important;
+            opacity: 0.7;
+        }
+
+        /* End Screen */
+        .score-box {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
+        }
+
+        .btn-main {
+            background: var(--btn-grad);
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.3rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+            transition: transform 0.2s;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+        }
+
+        .btn-main:hover { transform: scale(1.05); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="start-screen" class="screen active">
+            <div class="logo">؟</div>
+            <h1>تحدي المعلومات العامة</h1>
+            <p>لديك 15 سؤالاً .. هل يمكنك الإجابة عليها جميعاً؟</p>
+            <br>
+            <button class="btn-main" onclick="game.start()">ابدأ التحدي</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="header-bar">
+                <span id="q-counter">السؤال: 1 / 15</span>
+                <span id="score-counter">النقاط: 0</span>
+            </div>
+            
+            <div id="question-text" class="question-card">
+                جاري تحميل السؤال...
+            </div>
+
+            <div id="options-container" class="options-grid">
+                </div>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h2>انتهت المسابقة!</h2>
+            <p>نتيجتك النهائية هي</p>
+            <div class="score-box" id="final-score">0</div>
+            <p id="feedback-text"></p>
+            <button class="btn-main" onclick="location.reload()">لعب مرة أخرى</button>
+        </div>
+    </div>
+
+    <script>
+        // === قاعدة البيانات (تم استخراجها وتنظيفها من الملف المرفق) ===
+        const rawData = [
+            {q: "كم عدد أيام السنة الكبيسة؟", a: "366 يوم"},
+            {q: "ما هي الزهرة الوطنية للهند؟", a: "زهرة اللوتس"},
+            {q: "ما هي الألوان الأساسية؟", a: "الأحمر والأزرق والأصفر"},
+            {q: "ما هو أصغر شهر في السنة؟", a: "فبراير"},
+            {q: "ما هو اللون الذي يرمز إلى السلام؟", a: "الأبيض"},
+            {q: "ما هو المكان المعروف باسم سقف العالم؟", a: "التبت"},
+            {q: "كم عدد الولايات الهندية؟", a: "28"},
+            {q: "كم عدد السنوات في القرن؟", a: "100 سنة"},
+            {q: "ما اسم اللعبة الوطنية في أمريكا؟", a: "البيسبول"},
+            {q: "كم مليمتر في السنتيمتر؟", a: "10 مم"},
+            {q: "من وضع نظرية النسبية؟", a: "ألبرت اينشتاين"},
+            {q: "من وضع قانون الجاذبية؟", a: "إسحاق نيوتن"},
+            {q: "من هو مؤسس الدولة العلمانية في تركيا؟", a: "أتاتورك"},
+            {q: "من هو مؤسس النهضة الحديثة في مصر؟", a: "محمد علي باشا"},
+            {q: "من هو مؤسس الدولة السعودية الحديثة؟", a: "الملك عبد العزيز"},
+            {q: "ما هو نظام الحكم في إسبانيا؟", a: "نظام ملكي"},
+            {q: "ما هي أصغر دول الخليج مساحة؟", a: "البحرين"},
+            {q: "أغنى دولة خليجية باحتياطي الذهب؟", a: "السعودية"},
+            {q: "قائد ثورة 1919م في مصر؟", a: "سعد زغلول"},
+            {q: "دولة كان اسمها سابقاً أرض مجان؟", a: "عمان"},
+            {q: "الدولة التي كانت مقسمة لشرقية وغربية؟", a: "ألمانيا"},
+            {q: "الدولة التي اشترت منها أمريكا ألاسكا؟", a: "روسيا"},
+            {q: "الثورة التي غيرت شكل العالم حديثاً؟", a: "الثورة الصناعية"},
+            {q: "متى استقلت ليبيا عن إيطاليا؟", a: "1951م"},
+            {q: "النهر الذي يمر عبر باريس؟", a: "نهر السين"},
+            {q: "أكبر بحيرة في أفريقيا؟", a: "بحيرة فيكتوريا"},
+            {q: "أعمق نقطة في المحيطات؟", a: "خندق ماريانا"},
+            {q: "أرض الألف بحيرة؟", a: "فنلندا"},
+            {q: "عاصمة الأرجنتين؟", a: "بوينس آيرس"},
+            {q: "عاصمة استراليا؟", a: "كانبيرا"},
+            {q: "عاصمة تايلاند؟", a: "بانكوك"},
+            {q: "عاصمة السويد؟", a: "ستوكهولم"},
+            {q: "عاصمة بلجيكا؟", a: "بروكسل"},
+            {q: "عاصمة أيرلندا؟", a: "دبلن"},
+            {q: "أكبر نظام شعب مرجانية؟", a: "الحاجز المرجاني العظيم"},
+            {q: "ولاية أمريكية بها أكبر عدد براكين؟", a: "ألاسكا"},
+            {q: "أطول شلالات في العالم؟", a: "شلالات أنجل"},
+            {q: "أين تقع مدينة ماتشو بيتشو؟", a: "بيرو"},
+            {q: "أكبر الغابات في العالم؟", a: "غابة الأمازون"},
+            {q: "دولة تقع في أوروبا وآسيا معاً؟", a: "تركيا"},
+            {q: "أطول عشب بري في العالم؟", a: "الخيزران"},
+            {q: "جهاز قياس الإشعاع؟", a: "عداد جايجر"},
+            {q: "مكونات البرونز؟", a: "النحاس والقصدير"},
+            {q: "عدد قارات العالم؟", a: "7 قارات"},
+            {q: "تحول السائل لغاز يسمى؟", a: "التبخر"},
+            {q: "مركز الذرة هو؟", a: "النواة"},
+            {q: "علم دراسة الكائنات الحية؟", a: "الأحياء"},
+            {q: "ماذا تجمع النحلة؟", a: "الرحيق"},
+            {q: "عدد أرجل جراد البحر؟", a: "10"},
+            {q: "حيوان لسانه بطول جسمه؟", a: "الحرباء"},
+            {q: "صاحب أقوى عضة ثديية؟", a: "فرس النهر"},
+            {q: "أين توجد أصغر عظمة في الجسم؟", a: "الأذن"},
+            {q: "أكبر شريان في الجسم؟", a: "الأورطي"},
+            {q: "لون الزمرد؟", a: "أخضر"},
+            {q: "اسم الماء المتجمد؟", a: "ثلج"},
+            {q: "عدد كواكب المجموعة الشمسية؟", a: "8"},
+            {q: "أنثى الغزال تسمى؟", a: "ظبية"},
+            {q: "سبب سقوط الأشياء للأسفل؟", a: "الجاذبية"},
+            {q: "كوكب حوله حلقات؟", a: "زحل"},
+            {q: "موطن الكنغر؟", a: "استراليا"},
+            {q: "عكس كلمة غالي؟", a: "رخيص"},
+            {q: "عدد شهور السنة؟", a: "12"},
+            {q: "أكبر قارة في العالم؟", a: "آسيا"},
+            {q: "حاصل جمع 8 و 2؟", a: "10"},
+            {q: "أول حاكم للمغول؟", a: "جنكيز خان"},
+            {q: "أطول نهر في العالم؟", a: "نهر النيل"},
+            {q: "أطول نهر في آسيا؟", a: "نهر اليانغتسي"},
+            {q: "المكان الأكثر جفافاً في الأرض؟", a: "صحراء أتاكاما"},
+            {q: "أكبر دولة أفريقية سكاناً؟", a: "نيجيريا"},
+            {q: "أكبر جزيرة في العالم؟", a: "جرينلاند"},
+            {q: "مهد الديمقراطية؟", a: "أثينا"},
+            {q: "قارة بلا نحل؟", a: "أنتاركتيكا"},
+            {q: "الفاصل بين إسبانيا وفرنسا؟", a: "جبال البرانس"},
+            {q: "الرمز الكيميائي للهيدروجين؟", a: "H"},
+            {q: "الرمز الكيميائي للصوديوم؟", a: "Na"},
+            {q: "الرمز الكيميائي للحديد؟", a: "Fe"},
+            {q: "الرمز الكيميائي للذهب؟", a: "Au"},
+            {q: "الرمز الكيميائي للفضة؟", a: "Ag"},
+            {q: "الرمز الكيميائي للزئبق؟", a: "Hg"},
+            {q: "الرمز الكيميائي للماء؟", a: "H2O"},
+            {q: "اسم ملح الطعام كيميائياً؟", a: "كلوريد الصوديوم"},
+            {q: "أكثر العناصر وفرة في الشمس؟", a: "الهيدروجين"},
+            {q: "الرقم الهيدروجيني للماء النقي؟", a: "7"},
+            {q: "أصلب المواد الطبيعية؟", a: "الألماس"},
+            {q: "حمض موجود في الليمون؟", a: "الستريك"},
+            {q: "وقود الطائرات؟", a: "الكيروسين"},
+            {q: "مادة صناعة الزجاج؟", a: "السيليكا (الرمل)"},
+            {q: "الثلج الجاف هو؟", a: "ثاني أكسيد الكربون الصلب"},
+            {q: "العملية التي يتحول فيها الغاز لسائل؟", a: "التكثيف"}
+        ];
+
+        // === منطق اللعبة ===
+        const game = {
+            questions: [],
+            currentIdx: 0,
+            score: 0,
+            isBusy: false,
+
+            init: function() {
+                try {
+                    // خلط الأسئلة واختيار 15
+                    this.questions = this.shuffleArray([...rawData]).slice(0, 15);
+                    this.currentIdx = 0;
+                    this.score = 0;
+                    this.isBusy = false;
+                    
+                    if(this.questions.length === 0) throw new Error("قاعدة البيانات فارغة");
+
+                    this.updateUI();
+                    this.showScreen('game-screen');
+                    this.renderQuestion();
+                } catch (err) {
+                    alert("حدث خطأ: " + err.message);
+                    console.error(err);
+                }
+            },
+
+            start: function() {
+                this.init();
+            },
+
+            renderQuestion: function() {
+                const qData = this.questions[this.currentIdx];
+                const qEl = document.getElementById('question-text');
+                const optContainer = document.getElementById('options-container');
+
+                // تعيين نص السؤال
+                qEl.innerHTML = qData.q;
+                
+                // توليد الخيارات (1 صحيح + 3 خطأ)
+                let options = this.generateOptions(qData.a);
+                
+                // رسم الأزرار
+                optContainer.innerHTML = '';
+                options.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => this.handleAnswer(btn, opt, qData.a);
+                    optContainer.appendChild(btn);
+                });
+            },
+
+            generateOptions: function(correctAnswer) {
+                let options = [correctAnswer];
+                let attempts = 0;
+                
+                // البحث عن 3 إجابات خطأ عشوائية
+                while (options.length < 4 && attempts < 100) {
+                    let rand = rawData[Math.floor(Math.random() * rawData.length)].a;
+                    if (!options.includes(rand)) {
+                        options.push(rand);
+                    }
+                    attempts++;
+                }
+                
+                // خلط أماكن الأزرار
+                return this.shuffleArray(options);
+            },
+
+            handleAnswer: function(btn, selected, correct) {
+                if (this.isBusy) return;
+                this.isBusy = true;
+
+                if (selected === correct) {
+                    btn.classList.add('correct');
+                    this.score += 100;
+                    document.getElementById('score-counter').innerText = `النقاط: ${this.score}`;
+                    
+                    setTimeout(() => this.nextQuestion(), 1000);
+                } else {
+                    btn.classList.add('wrong');
+                    // إظهار الإجابة الصحيحة
+                    const allBtns = document.querySelectorAll('.option-btn');
+                    allBtns.forEach(b => {
+                        if (b.innerText === correct) b.classList.add('correct');
+                    });
+
+                    setTimeout(() => this.endGame(), 2000);
+                }
+            },
+
+            nextQuestion: function() {
+                this.currentIdx++;
+                if (this.currentIdx < this.questions.length) {
+                    this.isBusy = false;
+                    this.updateUI();
+                    this.renderQuestion();
+                } else {
+                    this.endGame(true);
+                }
+            },
+
+            endGame: function(won = false) {
+                this.showScreen('end-screen');
+                document.getElementById('final-score').innerText = this.score;
+                document.getElementById('feedback-text').innerText = 
+                    won ? "أحسنت! لقد أتممت جميع الأسئلة!" : "حظاً أوفر في المرة القادمة";
+            },
+
+            updateUI: function() {
+                document.getElementById('q-counter').innerText = 
+                    `السؤال: ${this.currentIdx + 1} / ${this.questions.length}`;
+            },
+
+            showScreen: function(id) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            },
+
+            shuffleArray: function(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+        };
+    </script>
+</body>
+</html>
