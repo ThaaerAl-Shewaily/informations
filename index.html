@@ -3,165 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسابقة المعلومات العامة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>مسابقة العباقرة - الذكاء الاصطناعي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --main-bg: radial-gradient(circle at center, #2b1055 0%, #000000 100%);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --accent: #f1c40f;
-            --text-color: #ffffff;
-            --btn-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --correct: #00b894;
-            --wrong: #d63031;
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --primary: #f9ca24;
+            --secondary: #0f3460;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --text: #e94560;
+            --text-light: #ffffff;
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
-            background: var(--main-bg);
-            color: var(--text-color);
+            font-family: 'Tajawal', sans-serif;
+            background: radial-gradient(circle, #1a1a2e 0%, #000000 100%);
+            color: var(--text-light);
             margin: 0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
             overflow-x: hidden;
-            user-select: none;
+            text-align: center;
         }
 
         .container {
-            width: 90%;
-            max-width: 800px;
-            padding: 20px;
+            width: 95%;
+            max-width: 750px;
         }
 
         /* Screens */
         .screen {
             display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        .screen.active {
-            display: block;
-        }
-
-        /* Start Screen */
-        .logo {
-            width: 120px;
-            height: 120px;
-            border: 4px solid var(--accent);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
-            color: var(--accent);
-            box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
-        }
-
-        h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent); }
-        p { color: #aaa; font-size: 1.1rem; }
-
-        /* Game Screen */
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .question-card {
-            background: linear-gradient(180deg, rgba(40,40,90,0.9) 0%, rgba(20,20,50,0.9) 100%);
-            padding: 40px 20px;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 30px;
             border-radius: 20px;
-            border: 1px solid var(--accent);
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: zoomIn 0.4s ease-out;
+            backdrop-filter: blur(10px);
         }
 
-        .options-grid {
+        .screen.active { display: block; }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(249, 202, 36, 0.5); }
+        h2 { font-size: 1.8rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 1.1rem; line-height: 1.6; }
+
+        /* Buttons */
+        .btn-main {
+            background: linear-gradient(45deg, #f9ca24, #f6e58d);
+            color: #2d3436;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            font-weight: 900;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+            box-shadow: 0 10px 20px rgba(249, 202, 36, 0.3);
+        }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(249, 202, 36, 0.5); }
+
+        /* Category Grid */
+        .cat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            margin-top: 20px;
         }
 
-        @media (max-width: 600px) {
-            .options-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 1.8rem; }
-            .question-card { font-size: 1.2rem; padding: 20px; }
-        }
-
-        .option-btn {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
+        .cat-btn {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 25px;
+            font-size: 1.3rem;
             color: white;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            border-radius: 50px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-family: 'Tajawal', sans-serif;
             position: relative;
             overflow: hidden;
         }
 
-        .option-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-            border-color: var(--accent);
+        .cat-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
         }
+        .cat-btn.history::before { background: #e17055; }
+        .cat-btn.geo::before { background: #00b894; }
+        .cat-btn.science::before { background: #0984e3; }
+        .cat-btn.general::before { background: #fdcb6e; }
 
-        .option-btn.correct {
-            background: var(--correct) !important;
-            border-color: var(--correct) !important;
-            box-shadow: 0 0 15px var(--correct);
-        }
+        .cat-btn:hover { transform: translateY(-5px); background: #1a1a2e; border-color: var(--primary); }
 
-        .option-btn.wrong {
-            background: var(--wrong) !important;
-            border-color: var(--wrong) !important;
-            opacity: 0.7;
-        }
-
-        /* End Screen */
-        .score-box {
-            font-size: 4rem;
-            font-weight: 900;
-            color: var(--accent);
-            margin: 20px 0;
-            text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
-        }
-
-        .btn-main {
-            background: var(--btn-grad);
-            border: none;
-            padding: 15px 50px;
-            font-size: 1.3rem;
-            color: white;
+        /* Question Area */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            background: rgba(0,0,0,0.3);
+            padding: 12px 25px;
             border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
-            transition: transform 0.2s;
-            font-family: 'Cairo', sans-serif;
-            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .btn-main:hover { transform: scale(1.05); }
+        .question-box {
+            background: linear-gradient(180deg, rgba(15, 52, 96, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .options-list { display: grid; gap: 15px; grid-template-columns: 1fr 1fr; }
+        @media (max-width: 600px) { .options-list { grid-template-columns: 1fr; } }
+
+        .option-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 20px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Tajawal', sans-serif;
+            position: relative;
+        }
+
+        .option-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
+        .option-btn.correct { background: var(--success); border-color: var(--success); box-shadow: 0 0 15px var(--success); }
+        .option-btn.wrong { background: var(--error); border-color: var(--error); opacity: 0.6; }
+
+        /* Result */
+        .result-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 8px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin: 30px auto;
+            font-weight: 900;
+            background: rgba(0,0,0,0.3);
+            box-shadow: 0 0 30px rgba(249, 202, 36, 0.2);
         }
     </style>
 </head>
@@ -169,258 +178,266 @@
 
     <div class="container">
         <div id="start-screen" class="screen active">
-            <div class="logo">؟</div>
-            <h1>تحدي المعلومات العامة</h1>
-            <p>لديك 15 سؤالاً .. هل يمكنك الإجابة عليها جميعاً؟</p>
-            <br>
-            <button class="btn-main" onclick="game.start()">ابدأ التحدي</button>
-            <h1>برمجة و تصميم</h1>
-	       <h2>ثائر الشويلي</h1>
-            <h3>2026</h1>
+            <h1 style="font-size: 6rem; margin: 0 0 20px 0;">؟</h1>
+            <h1>تحدي العباقرة</h1>
+            <p>10 مراحل • 4 مجالات • خيارات ذكية<br>النجاح يتطلب 50 نقطة</p>
+            <button class="btn-main" onclick="Game.start()">ابدأ التحدي</button>
+            <h2>برمجة و تصميم</h2>
+            <h3>ثائر الشويلي</h3>
+            <h4>2026</h1>
+        </div>
+
+        <div id="category-screen" class="screen">
+            <div class="stats">
+                <span id="cat-stage">المرحلة: 1 / 10</span>
+                <span id="cat-score">النقاط: 0</span>
+            </div>
+            <h2>اختر مجالك للمرحلة القادمة:</h2>
+            <div class="cat-grid">
+                <button class="cat-btn history" onclick="Game.selectCategory('history')">📜 التاريخ</button>
+                <button class="cat-btn geo" onclick="Game.selectCategory('geo')">🌍 الجغرافيا</button>
+                <button class="cat-btn science" onclick="Game.selectCategory('science')">🧪 العلوم</button>
+                <button class="cat-btn general" onclick="Game.selectCategory('general')">💡 ثقافة عامة</button>
+            </div>
         </div>
 
         <div id="game-screen" class="screen">
-            <div class="header-bar">
-                <span id="q-counter">السؤال: 1 / 15</span>
-                <span id="score-counter">النقاط: 0</span>
+            <div class="stats">
+                <span id="game-stage">المرحلة: 1</span>
+                <span id="game-cat">المجال: ...</span>
             </div>
-            
-            <div id="question-text" class="question-card">
-                جاري تحميل السؤال...
-            </div>
-
-            <div id="options-container" class="options-grid">
-                </div>
+            <div id="question-text" class="question-box">جاري التحميل...</div>
+            <div id="options-container" class="options-list"></div>
         </div>
 
-        <div id="end-screen" class="screen">
-            <h2>انتهت المسابقة!</h2>
-            <p>نتيجتك النهائية هي</p>
-            <div class="score-box" id="final-score">0</div>
-            <p id="feedback-text"></p>
+        <div id="result-screen" class="screen">
+            <h2>النتيجة النهائية</h2>
+            <div class="result-circle" id="final-score">0</div>
+            <div id="result-message"></div>
             <button class="btn-main" onclick="location.reload()">لعب مرة أخرى</button>
         </div>
     </div>
 
     <script>
-        // === قاعدة البيانات (تم استخراجها وتنظيفها من الملف المرفق) ===
-        const rawData = [
-            {q: "كم عدد أيام السنة الكبيسة؟", a: "366 يوم"},
-            {q: "ما هي الزهرة الوطنية للهند؟", a: "زهرة اللوتس"},
-            {q: "ما هي الألوان الأساسية؟", a: "الأحمر والأزرق والأصفر"},
-            {q: "ما هو أصغر شهر في السنة؟", a: "فبراير"},
-            {q: "ما هو اللون الذي يرمز إلى السلام؟", a: "الأبيض"},
-            {q: "ما هو المكان المعروف باسم سقف العالم؟", a: "التبت"},
-            {q: "كم عدد الولايات الهندية؟", a: "28"},
-            {q: "كم عدد السنوات في القرن؟", a: "100 سنة"},
-            {q: "ما اسم اللعبة الوطنية في أمريكا؟", a: "البيسبول"},
-            {q: "كم مليمتر في السنتيمتر؟", a: "10 مم"},
-            {q: "من وضع نظرية النسبية؟", a: "ألبرت اينشتاين"},
-            {q: "من وضع قانون الجاذبية؟", a: "إسحاق نيوتن"},
-            {q: "من هو مؤسس الدولة العلمانية في تركيا؟", a: "أتاتورك"},
-            {q: "من هو مؤسس النهضة الحديثة في مصر؟", a: "محمد علي باشا"},
-            {q: "من هو مؤسس الدولة السعودية الحديثة؟", a: "الملك عبد العزيز"},
-            {q: "ما هو نظام الحكم في إسبانيا؟", a: "نظام ملكي"},
-            {q: "ما هي أصغر دول الخليج مساحة؟", a: "البحرين"},
-            {q: "أغنى دولة خليجية باحتياطي الذهب؟", a: "السعودية"},
-            {q: "قائد ثورة 1919م في مصر؟", a: "سعد زغلول"},
-            {q: "دولة كان اسمها سابقاً أرض مجان؟", a: "عمان"},
-            {q: "الدولة التي كانت مقسمة لشرقية وغربية؟", a: "ألمانيا"},
-            {q: "الدولة التي اشترت منها أمريكا ألاسكا؟", a: "روسيا"},
-            {q: "الثورة التي غيرت شكل العالم حديثاً؟", a: "الثورة الصناعية"},
-            {q: "متى استقلت ليبيا عن إيطاليا؟", a: "1951م"},
-            {q: "النهر الذي يمر عبر باريس؟", a: "نهر السين"},
-            {q: "أكبر بحيرة في أفريقيا؟", a: "بحيرة فيكتوريا"},
-            {q: "أعمق نقطة في المحيطات؟", a: "خندق ماريانا"},
-            {q: "أرض الألف بحيرة؟", a: "فنلندا"},
-            {q: "عاصمة الأرجنتين؟", a: "بوينس آيرس"},
-            {q: "عاصمة استراليا؟", a: "كانبيرا"},
-            {q: "عاصمة تايلاند؟", a: "بانكوك"},
-            {q: "عاصمة السويد؟", a: "ستوكهولم"},
-            {q: "عاصمة بلجيكا؟", a: "بروكسل"},
-            {q: "عاصمة أيرلندا؟", a: "دبلن"},
-            {q: "أكبر نظام شعب مرجانية؟", a: "الحاجز المرجاني العظيم"},
-            {q: "ولاية أمريكية بها أكبر عدد براكين؟", a: "ألاسكا"},
-            {q: "أطول شلالات في العالم؟", a: "شلالات أنجل"},
-            {q: "أين تقع مدينة ماتشو بيتشو؟", a: "بيرو"},
-            {q: "أكبر الغابات في العالم؟", a: "غابة الأمازون"},
-            {q: "دولة تقع في أوروبا وآسيا معاً؟", a: "تركيا"},
-            {q: "أطول عشب بري في العالم؟", a: "الخيزران"},
-            {q: "جهاز قياس الإشعاع؟", a: "عداد جايجر"},
-            {q: "مكونات البرونز؟", a: "النحاس والقصدير"},
-            {q: "عدد قارات العالم؟", a: "7 قارات"},
-            {q: "تحول السائل لغاز يسمى؟", a: "التبخر"},
-            {q: "مركز الذرة هو؟", a: "النواة"},
-            {q: "علم دراسة الكائنات الحية؟", a: "الأحياء"},
-            {q: "ماذا تجمع النحلة؟", a: "الرحيق"},
-            {q: "عدد أرجل جراد البحر؟", a: "10"},
-            {q: "حيوان لسانه بطول جسمه؟", a: "الحرباء"},
-            {q: "صاحب أقوى عضة ثديية؟", a: "فرس النهر"},
-            {q: "أين توجد أصغر عظمة في الجسم؟", a: "الأذن"},
-            {q: "أكبر شريان في الجسم؟", a: "الأورطي"},
-            {q: "لون الزمرد؟", a: "أخضر"},
-            {q: "اسم الماء المتجمد؟", a: "ثلج"},
-            {q: "عدد كواكب المجموعة الشمسية؟", a: "8"},
-            {q: "أنثى الغزال تسمى؟", a: "ظبية"},
-            {q: "سبب سقوط الأشياء للأسفل؟", a: "الجاذبية"},
-            {q: "كوكب حوله حلقات؟", a: "زحل"},
-            {q: "موطن الكنغر؟", a: "استراليا"},
-            {q: "عكس كلمة غالي؟", a: "رخيص"},
-            {q: "عدد شهور السنة؟", a: "12"},
-            {q: "أكبر قارة في العالم؟", a: "آسيا"},
-            {q: "حاصل جمع 8 و 2؟", a: "10"},
-            {q: "أول حاكم للمغول؟", a: "جنكيز خان"},
-            {q: "أطول نهر في العالم؟", a: "نهر النيل"},
-            {q: "أطول نهر في آسيا؟", a: "نهر اليانغتسي"},
-            {q: "المكان الأكثر جفافاً في الأرض؟", a: "صحراء أتاكاما"},
-            {q: "أكبر دولة أفريقية سكاناً؟", a: "نيجيريا"},
-            {q: "أكبر جزيرة في العالم؟", a: "جرينلاند"},
-            {q: "مهد الديمقراطية؟", a: "أثينا"},
-            {q: "قارة بلا نحل؟", a: "أنتاركتيكا"},
-            {q: "الفاصل بين إسبانيا وفرنسا؟", a: "جبال البرانس"},
-            {q: "الرمز الكيميائي للهيدروجين؟", a: "H"},
-            {q: "الرمز الكيميائي للصوديوم؟", a: "Na"},
-            {q: "الرمز الكيميائي للحديد؟", a: "Fe"},
-            {q: "الرمز الكيميائي للذهب؟", a: "Au"},
-            {q: "الرمز الكيميائي للفضة؟", a: "Ag"},
-            {q: "الرمز الكيميائي للزئبق؟", a: "Hg"},
-            {q: "الرمز الكيميائي للماء؟", a: "H2O"},
-            {q: "اسم ملح الطعام كيميائياً؟", a: "كلوريد الصوديوم"},
-            {q: "أكثر العناصر وفرة في الشمس؟", a: "الهيدروجين"},
-            {q: "الرقم الهيدروجيني للماء النقي؟", a: "7"},
-            {q: "أصلب المواد الطبيعية؟", a: "الألماس"},
-            {q: "حمض موجود في الليمون؟", a: "الستريك"},
-            {q: "وقود الطائرات؟", a: "الكيروسين"},
-            {q: "مادة صناعة الزجاج؟", a: "السيليكا (الرمل)"},
-            {q: "الثلج الجاف هو؟", a: "ثاني أكسيد الكربون الصلب"},
-            {q: "العملية التي يتحول فيها الغاز لسائل؟", a: "التكثيف"}
-        ];
+        // === قاعدة البيانات الذكية مع تصنيف نوع الإجابة ===
+        // type: يحدد نوع الإجابة لضمان أن الخيارات الخاطئة تكون من نفس النوع
+        // (person, country, year, city, number, element, nature)
+        
+        const database = {
+            history: [
+                {q: "من هو مؤسس الدولة العلمانية في تركيا؟", a: "مصطفى كمال أتاتورك", type: "person"},
+                {q: "من هو مؤسس النهضة الحديثة في مصر؟", a: "محمد علي باشا", type: "person"},
+                {q: "من هو مؤسس الدولة السعودية الحديثة؟", a: "الملك عبد العزيز آل سعود", type: "person"},
+                {q: "من هو قائد ثورة 1919م في مصر؟", a: "سعد زغلول", type: "person"},
+                {q: "من هو أول حاكم للإمبراطورية المغولية؟", a: "جنكيز خان", type: "person"},
+                {q: "من هو الملك الذي تم بناء الهرم الأكبر له؟", a: "الملك خوفو", type: "person"},
+                {q: "الدولة التي كانت مقسمة إلى شرقية وغربية؟", a: "ألمانيا", type: "country"},
+                {q: "الدولة التي اشترت منها أمريكا ولاية ألاسكا؟", a: "روسيا", type: "country"},
+                {q: "متى استقلت ليبيا عن إيطاليا؟", a: "1951م", type: "year"},
+                {q: "في أي عام تم سن قوانين عمالة الأطفال في أمريكا؟", a: "1938م", type: "year"},
+                {q: "كم سنة في القرن؟", a: "100 سنة", type: "number"},
+                {q: "كم سنة في العقد؟", a: "10 سنوات", type: "number"}
+            ],
+            geo: [
+                {q: "ما هي عاصمة الأرجنتين؟", a: "بوينس آيرس", type: "city"},
+                {q: "ما هي عاصمة استراليا؟", a: "كانبيرا", type: "city"},
+                {q: "ما هي عاصمة تايلاند؟", a: "بانكوك", type: "city"},
+                {q: "ما هي عاصمة السويد؟", a: "ستوكهولم", type: "city"},
+                {q: "ما هي عاصمة بلجيكا؟", a: "بروكسل", type: "city"},
+                {q: "ما هي عاصمة أيرلندا؟", a: "دبلن", type: "city"},
+                {q: "ما هي المدينة المشهورة باسم مهد الديمقراطية؟", a: "أثينا", type: "city"},
+                {q: "ما هي عاصمة إمبراطورية الإنكا؟", a: "كوزكو", type: "city"},
+                {q: "ما هي أصغر دول الخليج من حيث المساحة؟", a: "البحرين", type: "country"},
+                {q: "ما هي الدولة المشهورة بأنها أرض الألف بحيرة؟", a: "فنلندا", type: "country"},
+                {q: "ما اسم النهر الذي يمر عبر باريس؟", a: "نهر السين", type: "nature"},
+                {q: "أكبر بحيرة مائية في أفريقيا؟", a: "بحيرة فيكتوريا", type: "nature"},
+                {q: "أطول نهر في العالم؟", a: "نهر النيل", type: "nature"},
+                {q: "أطول نهر في آسيا؟", a: "نهر اليانغتسي", type: "nature"},
+                {q: "أطول شلالات في العالم؟", a: "شلالات أنجل", type: "nature"},
+                {q: "كم عدد الولايات الهندية؟", a: "28", type: "number"}
+            ],
+            science: [
+                {q: "الرمز الكيميائي للحديد؟", a: "Fe", type: "element"},
+                {q: "الرمز الكيميائي للذهب؟", a: "Au", type: "element"},
+                {q: "الرمز الكيميائي للفضة؟", a: "Ag", type: "element"},
+                {q: "الرمز الكيميائي للزئبق؟", a: "Hg", type: "element"},
+                {q: "الرمز الكيميائي للهيدروجين؟", a: "H", type: "element"},
+                {q: "الرمز الكيميائي للنحاس؟", a: "Cu", type: "element"},
+                {q: "كم مليمتر في السنتيمتر؟", a: "10 مم", type: "number"},
+                {q: "كم عدد أرجل جراد البحر؟", a: "10", type: "number"},
+                {q: "كم عدد عظام رقبة الزرافة؟", a: "7", type: "number"},
+                {q: "كم عدد الكواكب في المجموعة الشمسية؟", a: "8", type: "number"},
+                {q: "العدد الذري للهيدروجين؟", a: "1", type: "number"},
+                {q: "العدد الذري للصوديوم؟", a: "11", type: "number"},
+                {q: "من وضع نظرية النسبية؟", a: "ألبرت اينشتاين", type: "person"},
+                {q: "من وضع قانون الجاذبية؟", a: "إسحاق نيوتن", type: "person"}
+            ],
+            general: [
+                {q: "كم عدد أيام السنة الكبيسة؟", a: "366 يوم", type: "number"},
+                {q: "كم عدد أيام السنة البسيطة؟", a: "365 يوم", type: "number"},
+                {q: "كم ضلع في المثلث؟", a: "3", type: "number"},
+                {q: "حاصل جمع 8 و 2؟", a: "10", type: "number"},
+                {q: "ما هو اللون الذي يرمز للسلام؟", a: "الأبيض", type: "color"},
+                {q: "ما هو لون الزمرد؟", a: "أخضر", type: "color"},
+                {q: "ما هي الألوان الأساسية؟", a: "أحمر، أزرق، أصفر", type: "color"},
+                {q: "ما اسم أنثى ميكي ماوس؟", a: "ميني ماوس", type: "person"},
+                {q: "ما اسم اللعبة الوطنية في أمريكا؟", a: "البيسبول", type: "sport"},
+                {q: "ما هو عكس كلمة غالي؟", a: "رخيص", type: "adj"}
+            ]
+        };
 
-        // === منطق اللعبة ===
-        const game = {
-            questions: [],
-            currentIdx: 0,
+        // === محرك اللعبة ===
+        const Game = {
+            stage: 1,
             score: 0,
+            maxStages: 10,
             isBusy: false,
-
-            init: function() {
-                try {
-                    // خلط الأسئلة واختيار 15
-                    this.questions = this.shuffleArray([...rawData]).slice(0, 15);
-                    this.currentIdx = 0;
-                    this.score = 0;
-                    this.isBusy = false;
-                    
-                    if(this.questions.length === 0) throw new Error("قاعدة البيانات فارغة");
-
-                    this.updateUI();
-                    this.showScreen('game-screen');
-                    this.renderQuestion();
-                } catch (err) {
-                    alert("حدث خطأ: " + err.message);
-                    console.error(err);
-                }
-            },
+            usedQuestions: [],
 
             start: function() {
-                this.init();
+                this.stage = 1;
+                this.score = 0;
+                this.usedQuestions = [];
+                this.isBusy = false;
+                this.showScreen('category-screen');
+                this.updateStats();
             },
 
-            renderQuestion: function() {
-                const qData = this.questions[this.currentIdx];
-                const qEl = document.getElementById('question-text');
-                const optContainer = document.getElementById('options-container');
+            selectCategory: function(cat) {
+                if(this.isBusy) return;
+                
+                // تصفية الأسئلة المستعملة
+                const pool = database[cat].filter(q => !this.usedQuestions.includes(q.q));
+                
+                // في حال نفاد الأسئلة (نادر الحدوث مع 10 مراحل) نعيد استخدام الكل
+                const finalPool = pool.length > 0 ? pool : database[cat];
+                
+                // اختيار سؤال عشوائي
+                const randomQ = finalPool[Math.floor(Math.random() * finalPool.length)];
+                this.usedQuestions.push(randomQ.q);
 
-                // تعيين نص السؤال
-                qEl.innerHTML = qData.q;
+                this.renderQuestion(randomQ, cat);
+                this.showScreen('game-screen');
+            },
+
+            renderQuestion: function(qData, cat) {
+                const catNames = {'history': 'تاريخ', 'geo': 'جغرافيا', 'science': 'علوم', 'general': 'ثقافة عامة'};
                 
-                // توليد الخيارات (1 صحيح + 3 خطأ)
-                let options = this.generateOptions(qData.a);
+                document.getElementById('question-text').innerText = qData.q;
+                document.getElementById('game-cat').innerText = catNames[cat];
+                document.getElementById('game-stage').innerText = `المرحلة: ${this.stage}`;
+
+                // === الذكاء في توليد الخيارات ===
+                // نرسل نوع السؤال (type) لجلب خيارات مشابهة
+                const options = this.generateSmartOptions(qData.a, qData.type);
                 
-                // رسم الأزرار
-                optContainer.innerHTML = '';
+                const container = document.getElementById('options-container');
+                container.innerHTML = '';
+
                 options.forEach(opt => {
                     const btn = document.createElement('div');
                     btn.className = 'option-btn';
                     btn.innerText = opt;
-                    btn.onclick = () => this.handleAnswer(btn, opt, qData.a);
-                    optContainer.appendChild(btn);
+                    btn.onclick = () => this.checkAnswer(btn, opt, qData.a);
+                    container.appendChild(btn);
                 });
             },
 
-            generateOptions: function(correctAnswer) {
-                let options = [correctAnswer];
-                let attempts = 0;
+            generateSmartOptions: function(correctAnswer, type) {
+                // 1. تجميع كل الإجابات من قاعدة البيانات كاملة التي تطابق نفس "النوع"
+                let sameTypePool = [];
                 
-                // البحث عن 3 إجابات خطأ عشوائية
-                while (options.length < 4 && attempts < 100) {
-                    let rand = rawData[Math.floor(Math.random() * rawData.length)].a;
-                    if (!options.includes(rand)) {
-                        options.push(rand);
+                Object.keys(database).forEach(cat => {
+                    database[cat].forEach(item => {
+                        // شرط: نفس النوع، وليست الإجابة الصحيحة، ولم تضاف مسبقاً
+                        if(item.type === type && item.a !== correctAnswer && !sameTypePool.includes(item.a)) {
+                            sameTypePool.push(item.a);
+                        }
+                    });
+                });
+
+                // 2. خلط قائمة الإجابات المشابهة
+                sameTypePool = sameTypePool.sort(() => 0.5 - Math.random());
+
+                // 3. اختيار 3 إجابات خاطئة
+                let distractors = sameTypePool.slice(0, 3);
+
+                // **حالة طوارئ**: إذا لم نجد ما يكفي من الخيارات من نفس النوع (مثلاً نوع نادر)
+                // نكمل الخيارات بإجابات عشوائية لتجنب توقف اللعبة
+                if(distractors.length < 3) {
+                    let randomBackup = [];
+                     Object.keys(database).forEach(cat => {
+                        database[cat].forEach(item => {
+                            if(item.a !== correctAnswer && !distractors.includes(item.a)) randomBackup.push(item.a);
+                        });
+                    });
+                    randomBackup = randomBackup.sort(() => 0.5 - Math.random());
+                    while(distractors.length < 3) {
+                        distractors.push(randomBackup.pop());
                     }
-                    attempts++;
                 }
-                
-                // خلط أماكن الأزرار
-                return this.shuffleArray(options);
+
+                // 4. دمج الصحيحة مع الخاطئة وخلطهم
+                return [...distractors, correctAnswer].sort(() => 0.5 - Math.random());
             },
 
-            handleAnswer: function(btn, selected, correct) {
-                if (this.isBusy) return;
+            checkAnswer: function(btn, selected, correct) {
+                if(this.isBusy) return;
                 this.isBusy = true;
 
-                if (selected === correct) {
+                const allBtns = document.querySelectorAll('.option-btn');
+                
+                if(selected === correct) {
                     btn.classList.add('correct');
-                    this.score += 100;
-                    document.getElementById('score-counter').innerText = `النقاط: ${this.score}`;
-                    
-                    setTimeout(() => this.nextQuestion(), 1000);
+                    this.score += 10;
                 } else {
                     btn.classList.add('wrong');
-                    // إظهار الإجابة الصحيحة
-                    const allBtns = document.querySelectorAll('.option-btn');
+                    // إظهار الصحيح
                     allBtns.forEach(b => {
-                        if (b.innerText === correct) b.classList.add('correct');
+                        if(b.innerText === correct) b.classList.add('correct');
                     });
-
-                    setTimeout(() => this.endGame(), 2000);
                 }
-            },
 
-            nextQuestion: function() {
-                this.currentIdx++;
-                if (this.currentIdx < this.questions.length) {
+                setTimeout(() => {
                     this.isBusy = false;
-                    this.updateUI();
-                    this.renderQuestion();
+                    if(this.stage < this.maxStages) {
+                        this.stage++;
+                        this.updateStats();
+                        this.showScreen('category-screen');
+                    } else {
+                        this.endGame();
+                    }
+                }, 1500);
+            },
+
+            endGame: function() {
+                this.showScreen('result-screen');
+                const scoreEl = document.getElementById('final-score');
+                const msgEl = document.getElementById('result-message');
+                
+                scoreEl.innerText = this.score;
+                
+                if(this.score >= 50) {
+                    scoreEl.style.borderColor = "var(--success)";
+                    scoreEl.style.color = "var(--success)";
+                    scoreEl.style.boxShadow = "0 0 30px var(--success)";
+                    msgEl.innerHTML = "<h3 style='color:var(--success)'>🎉 مبروك! أنت عبقري 🎉</h3>";
                 } else {
-                    this.endGame(true);
+                    scoreEl.style.borderColor = "var(--error)";
+                    scoreEl.style.color = "var(--error)";
+                    scoreEl.style.boxShadow = "0 0 30px var(--error)";
+                    msgEl.innerHTML = "<h3 style='color:var(--error)'>للأسف.. حاول مرة أخرى</h3>";
                 }
             },
 
-            endGame: function(won = false) {
-                this.showScreen('end-screen');
-                document.getElementById('final-score').innerText = this.score;
-                document.getElementById('feedback-text').innerText = 
-                    won ? "أحسنت! لقد أتممت جميع الأسئلة!" : "حظاً أوفر في المرة القادمة";
-            },
-
-            updateUI: function() {
-                document.getElementById('q-counter').innerText = 
-                    `السؤال: ${this.currentIdx + 1} / ${this.questions.length}`;
+            updateStats: function() {
+                document.getElementById('cat-stage').innerText = `المرحلة: ${this.stage} / ${this.maxStages}`;
+                document.getElementById('cat-score').innerText = `النقاط: ${this.score}`;
             },
 
             showScreen: function(id) {
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById(id).classList.add('active');
-            },
-
-            shuffleArray: function(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
             }
         };
     </script>
