@@ -2,444 +2,486 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسابقة العباقرة - الذكاء الاصطناعي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الموسوعة الذهبية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;800&display=swap" rel="stylesheet">
     <style>
+        /* --- المتغيرات والألوان --- */
         :root {
-            --bg-dark: #1a1a2e;
-            --bg-card: #16213e;
-            --primary: #f9ca24;
-            --secondary: #0f3460;
-            --success: #2ecc71;
-            --error: #e74c3c;
-            --text: #e94560;
-            --text-light: #ffffff;
+            --bg: #0f172a; --surface: #1e293b; --surface-hover: #334155;
+            --primary: #f59e0b; --text: #f1f5f9; --text-sec: #94a3b8;
+            --success: #10b981; --error: #ef4444; --loan: #8b5cf6;
+            --shadow: 0 8px 20px rgba(0,0,0,0.4); --radius: 16px;
+        }
+        [data-theme="light"] {
+            --bg: #f8fafc; --surface: #ffffff; --surface-hover: #e2e8f0;
+            --primary: #d97706; --text: #0f172a; --text-sec: #64748b;
+            --shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; }
+        
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: radial-gradient(circle, #1a1a2e 0%, #000000 100%);
-            color: var(--text-light);
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
-            text-align: center;
+            background-color: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif;
+            margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            transition: background-color 0.3s;
         }
 
-        .container {
-            width: 95%;
-            max-width: 750px;
+        /* --- إطار التركيز (Accessibility & TV) --- */
+        *:focus-visible {
+            outline: 3px solid var(--primary); outline-offset: 4px; border-radius: 8px; z-index: 100;
         }
 
-        /* Screens */
-        .screen {
-            display: none;
-            background: rgba(22, 33, 62, 0.9);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: zoomIn 0.4s ease-out;
-            backdrop-filter: blur(10px);
+        /* --- الهيكل --- */
+        .app-container {
+            width: 100%; max-width: 1600px; margin: 0 auto; height: 100%;
+            display: flex; flex-direction: column; padding: 20px;
         }
 
-        .screen.active { display: block; }
-
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--surface); padding: 10px 25px; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 20px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.05);
         }
 
-        h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(249, 202, 36, 0.5); }
-        h2 { font-size: 1.8rem; margin-bottom: 20px; }
-        p { color: #ccc; font-size: 1.1rem; line-height: 1.6; }
-
-        /* Buttons */
-        .btn-main {
-            background: linear-gradient(45deg, #f9ca24, #f6e58d);
-            color: #2d3436;
-            border: none;
-            padding: 15px 50px;
-            font-size: 1.4rem;
-            border-radius: 50px;
-            font-weight: 900;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-            font-family: 'Tajawal', sans-serif;
-            box-shadow: 0 10px 20px rgba(249, 202, 36, 0.3);
+        .grid {
+            display: grid; gap: 20px; padding: 10px; overflow-y: auto;
+            grid-template-columns: 1fr; /* موبايل */
         }
-        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(249, 202, 36, 0.5); }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 
-        /* Category Grid */
-        .cat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+        /* --- البطاقات --- */
+        .card {
+            background: var(--surface); border-radius: var(--radius); padding: 20px;
+            text-align: center; cursor: pointer; transition: 0.2s; border: 2px solid transparent;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 180px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+        }
+        
+        .card:hover:not(.disabled) {
+            transform: translateY(-5px); border-color: var(--primary); background: var(--surface-hover);
         }
 
-        .cat-btn {
-            background: linear-gradient(135deg, #0f3460, #16213e);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 25px;
-            font-size: 1.3rem;
-            color: white;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-            font-family: 'Tajawal', sans-serif;
-            position: relative;
-            overflow: hidden;
+        /* ستايل القفل (التصنيف المكتمل) */
+        .card.disabled {
+            background: var(--surface-hover); 
+            opacity: 0.5; 
+            cursor: default; 
+            pointer-events: none; /* يمنع النقر */
+            border-color: #334155;
+            filter: grayscale(100%);
         }
-
-        .cat-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 5px;
+        
+        .completed-overlay {
+            position: absolute; inset: 0; background: rgba(16, 185, 129, 0.15);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--success); font-weight: 900; opacity: 0; transition: 0.3s;
         }
-        .cat-btn.history::before { background: #e17055; }
-        .cat-btn.geo::before { background: #00b894; }
-        .cat-btn.science::before { background: #0984e3; }
-        .cat-btn.general::before { background: #fdcb6e; }
+        .card.disabled .completed-overlay { opacity: 1; }
+        .checkmark { font-size: 3rem; margin-bottom: 5px; }
 
-        .cat-btn:hover { transform: translateY(-5px); background: #1a1a2e; border-color: var(--primary); }
+        .card-icon { font-size: 3.5rem; margin-bottom: 10px; }
+        .card-title { font-size: 1.3rem; font-weight: 800; }
+        .card-info { font-size: 0.9rem; color: var(--text-sec); margin-top: 5px; }
 
-        /* Question Area */
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            font-size: 1.2rem;
-            color: var(--primary);
-            background: rgba(0,0,0,0.3);
-            padding: 12px 25px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        /* --- شاشة اللعب --- */
+        .screen { display: none; flex: 1; flex-direction: column; animation: fadeIn 0.4s ease; }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        .game-header { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
         .question-box {
-            background: linear-gradient(180deg, rgba(15, 52, 96, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            font-size: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+            background: var(--surface); padding: 40px; border-radius: 25px;
+            text-align: center; font-size: 1.8rem; font-weight: 800; line-height: 1.6;
+            margin-bottom: 30px; flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--surface-hover); box-shadow: var(--shadow);
         }
+        
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 700px) { .options-grid { grid-template-columns: 1fr; } }
 
-        .options-list { display: grid; gap: 15px; grid-template-columns: 1fr 1fr; }
-        @media (max-width: 600px) { .options-list { grid-template-columns: 1fr; } }
-
-        .option-btn {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 20px;
-            font-size: 1.2rem;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Tajawal', sans-serif;
-            position: relative;
+        .opt-btn {
+            background: var(--surface); color: var(--text); border: 2px solid var(--surface-hover);
+            padding: 20px; border-radius: 15px; font-size: 1.3rem; font-weight: bold;
+            cursor: pointer; transition: 0.2s;
         }
+        .opt-btn:hover, .opt-btn:focus { background: var(--surface-hover); border-color: var(--primary); transform: scale(1.02); }
+        .opt-btn.correct { background: var(--success) !important; border-color: var(--success) !important; color: white !important; }
+        .opt-btn.wrong { background: var(--error) !important; border-color: var(--error) !important; color: white !important; opacity: 0.6; }
 
-        .option-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
-        .option-btn.correct { background: var(--success); border-color: var(--success); box-shadow: 0 0 15px var(--success); }
-        .option-btn.wrong { background: var(--error); border-color: var(--error); opacity: 0.6; }
-
-        /* Result */
-        .result-circle {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            border: 8px solid var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3.5rem;
-            margin: 30px auto;
-            font-weight: 900;
-            background: rgba(0,0,0,0.3);
-            box-shadow: 0 0 30px rgba(249, 202, 36, 0.2);
+        /* --- المودالات --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(8px);
         }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        
+        .modal-card {
+            background: var(--surface); width: 90%; max-width: 450px; padding: 30px;
+            border-radius: 25px; text-align: center; border: 1px solid var(--surface-hover);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.8); transition: 0.3s;
+        }
+        .modal-overlay.open .modal-card { transform: scale(1); }
+
+        .modal-icon { font-size: 4rem; margin-bottom: 10px; }
+        .modal-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 10px; color: var(--primary); }
+        .modal-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: var(--text-sec); }
+        .modal-actions { display: flex; gap: 10px; justify-content: center; }
+
+        .btn { padding: 12px 25px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-sec { background: transparent; border: 2px solid var(--surface-hover); color: var(--text); }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(50px);
+            background: #334155; color: white; padding: 12px 30px; border-radius: 50px;
+            opacity: 0; transition: 0.3s; font-weight: bold; z-index: 6000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div id="start-screen" class="screen active">
-            <h1 style="font-size: 6rem; margin: 0 0 20px 0;">؟</h1>
-            <h1>تحدي العباقرة</h1>
-            <p>10 مراحل • 4 مجالات • خيارات ذكية<br>النجاح يتطلب 50 نقطة</p>
-            <button class="btn-main" onclick="Game.start()">ابدأ التحدي</button>
-            <h2>برمجة و تصميم</h2>
-            <h3>ثائر الشويلي</h3>
-            <h4>2026</h1>
+<div class="app-container">
+    <div class="header">
+        <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary); display:flex; align-items:center; gap:10px;">
+            <span>💎</span> الموسوعة
         </div>
-
-        <div id="category-screen" class="screen">
-            <div class="stats">
-                <span id="cat-stage">المرحلة: 1 / 10</span>
-                <span id="cat-score">النقاط: 0</span>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 50px; font-weight: bold;">
+                💰 <span id="score-display">0</span>
             </div>
-            <h2>اختر مجالك للمرحلة القادمة:</h2>
-            <div class="cat-grid">
-                <button class="cat-btn history" onclick="Game.selectCategory('history')">📜 التاريخ</button>
-                <button class="cat-btn geo" onclick="Game.selectCategory('geo')">🌍 الجغرافيا</button>
-                <button class="cat-btn science" onclick="Game.selectCategory('science')">🧪 العلوم</button>
-                <button class="cat-btn general" onclick="Game.selectCategory('general')">💡 ثقافة عامة</button>
-            </div>
-        </div>
-
-        <div id="game-screen" class="screen">
-            <div class="stats">
-                <span id="game-stage">المرحلة: 1</span>
-                <span id="game-cat">المجال: ...</span>
-            </div>
-            <div id="question-text" class="question-box">جاري التحميل...</div>
-            <div id="options-container" class="options-list"></div>
-        </div>
-
-        <div id="result-screen" class="screen">
-            <h2>النتيجة النهائية</h2>
-            <div class="result-circle" id="final-score">0</div>
-            <div id="result-message"></div>
-            <button class="btn-main" onclick="location.reload()">لعب مرة أخرى</button>
+            <button class="btn btn-sec" onclick="toggleTheme()" style="padding: 8px 12px;">🌗</button>
+            <button class="btn btn-danger" onclick="showResetModal()">↺ تصفير</button>
         </div>
     </div>
 
-    <script>
-        // === قاعدة البيانات الذكية مع تصنيف نوع الإجابة ===
-        // type: يحدد نوع الإجابة لضمان أن الخيارات الخاطئة تكون من نفس النوع
-        // (person, country, year, city, number, element, nature)
-        
-        const database = {
-            history: [
-                {q: "من هو مؤسس الدولة العلمانية في تركيا؟", a: "مصطفى كمال أتاتورك", type: "person"},
-                {q: "من هو مؤسس النهضة الحديثة في مصر؟", a: "محمد علي باشا", type: "person"},
-                {q: "من هو مؤسس الدولة السعودية الحديثة؟", a: "الملك عبد العزيز آل سعود", type: "person"},
-                {q: "من هو قائد ثورة 1919م في مصر؟", a: "سعد زغلول", type: "person"},
-                {q: "من هو أول حاكم للإمبراطورية المغولية؟", a: "جنكيز خان", type: "person"},
-                {q: "من هو الملك الذي تم بناء الهرم الأكبر له؟", a: "الملك خوفو", type: "person"},
-                {q: "الدولة التي كانت مقسمة إلى شرقية وغربية؟", a: "ألمانيا", type: "country"},
-                {q: "الدولة التي اشترت منها أمريكا ولاية ألاسكا؟", a: "روسيا", type: "country"},
-                {q: "متى استقلت ليبيا عن إيطاليا؟", a: "1951م", type: "year"},
-                {q: "في أي عام تم سن قوانين عمالة الأطفال في أمريكا؟", a: "1938م", type: "year"},
-                {q: "كم سنة في القرن؟", a: "100 سنة", type: "number"},
-                {q: "كم سنة في العقد؟", a: "10 سنوات", type: "number"}
-            ],
-            geo: [
-                {q: "ما هي عاصمة الأرجنتين؟", a: "بوينس آيرس", type: "city"},
-                {q: "ما هي عاصمة استراليا؟", a: "كانبيرا", type: "city"},
-                {q: "ما هي عاصمة تايلاند؟", a: "بانكوك", type: "city"},
-                {q: "ما هي عاصمة السويد؟", a: "ستوكهولم", type: "city"},
-                {q: "ما هي عاصمة بلجيكا؟", a: "بروكسل", type: "city"},
-                {q: "ما هي عاصمة أيرلندا؟", a: "دبلن", type: "city"},
-                {q: "ما هي المدينة المشهورة باسم مهد الديمقراطية؟", a: "أثينا", type: "city"},
-                {q: "ما هي عاصمة إمبراطورية الإنكا؟", a: "كوزكو", type: "city"},
-                {q: "ما هي أصغر دول الخليج من حيث المساحة؟", a: "البحرين", type: "country"},
-                {q: "ما هي الدولة المشهورة بأنها أرض الألف بحيرة؟", a: "فنلندا", type: "country"},
-                {q: "ما اسم النهر الذي يمر عبر باريس؟", a: "نهر السين", type: "nature"},
-                {q: "أكبر بحيرة مائية في أفريقيا؟", a: "بحيرة فيكتوريا", type: "nature"},
-                {q: "أطول نهر في العالم؟", a: "نهر النيل", type: "nature"},
-                {q: "أطول نهر في آسيا؟", a: "نهر اليانغتسي", type: "nature"},
-                {q: "أطول شلالات في العالم؟", a: "شلالات أنجل", type: "nature"},
-                {q: "كم عدد الولايات الهندية؟", a: "28", type: "number"}
-            ],
-            science: [
-                {q: "الرمز الكيميائي للحديد؟", a: "Fe", type: "element"},
-                {q: "الرمز الكيميائي للذهب؟", a: "Au", type: "element"},
-                {q: "الرمز الكيميائي للفضة؟", a: "Ag", type: "element"},
-                {q: "الرمز الكيميائي للزئبق؟", a: "Hg", type: "element"},
-                {q: "الرمز الكيميائي للهيدروجين؟", a: "H", type: "element"},
-                {q: "الرمز الكيميائي للنحاس؟", a: "Cu", type: "element"},
-                {q: "كم مليمتر في السنتيمتر؟", a: "10 مم", type: "number"},
-                {q: "كم عدد أرجل جراد البحر؟", a: "10", type: "number"},
-                {q: "كم عدد عظام رقبة الزرافة؟", a: "7", type: "number"},
-                {q: "كم عدد الكواكب في المجموعة الشمسية؟", a: "8", type: "number"},
-                {q: "العدد الذري للهيدروجين؟", a: "1", type: "number"},
-                {q: "العدد الذري للصوديوم؟", a: "11", type: "number"},
-                {q: "من وضع نظرية النسبية؟", a: "ألبرت اينشتاين", type: "person"},
-                {q: "من وضع قانون الجاذبية؟", a: "إسحاق نيوتن", type: "person"}
-            ],
-            general: [
-                {q: "كم عدد أيام السنة الكبيسة؟", a: "366 يوم", type: "number"},
-                {q: "كم عدد أيام السنة البسيطة؟", a: "365 يوم", type: "number"},
-                {q: "كم ضلع في المثلث؟", a: "3", type: "number"},
-                {q: "حاصل جمع 8 و 2؟", a: "10", type: "number"},
-                {q: "ما هو اللون الذي يرمز للسلام؟", a: "الأبيض", type: "color"},
-                {q: "ما هو لون الزمرد؟", a: "أخضر", type: "color"},
-                {q: "ما هي الألوان الأساسية؟", a: "أحمر، أزرق، أصفر", type: "color"},
-                {q: "ما اسم أنثى ميكي ماوس؟", a: "ميني ماوس", type: "person"},
-                {q: "ما اسم اللعبة الوطنية في أمريكا؟", a: "البيسبول", type: "sport"},
-                {q: "ما هو عكس كلمة غالي؟", a: "رخيص", type: "adj"}
-            ]
-        };
+    <div id="screen-home" class="screen active">
+        <div class="grid" id="categories-grid"></div>
+    </div>
 
-        // === محرك اللعبة ===
-        const Game = {
-            stage: 1,
-            score: 0,
-            maxStages: 10,
-            isBusy: false,
-            usedQuestions: [],
+    <div id="screen-game" class="screen">
+        <div class="game-header">
+            <button class="btn btn-sec" onclick="endSession()">🏠 خروج</button>
+            <span id="stage-badge" style="background: var(--surface-hover); padding: 5px 15px; border-radius: 15px;">المرحلة 1</span>
+            <span id="q-counter"></span>
+        </div>
+        <div class="question-box" id="q-text">...</div>
+        <div class="options-grid" id="opts-container"></div>
+    </div>
+</div>
 
-            start: function() {
-                this.stage = 1;
-                this.score = 0;
-                this.usedQuestions = [];
-                this.isBusy = false;
-                this.showScreen('category-screen');
-                this.updateStats();
-            },
+<div class="modal-overlay" id="bank-modal">
+    <div class="modal-card">
+        <div class="modal-icon">🏦</div>
+        <div class="modal-title">تنبيه إفلاس!</div>
+        <p class="modal-text">رصيدك نفذ! هل تريد قرض إنقاذ بقيمة <b>150 نقطة</b>؟<br><small>(يكفي لـ 3 محاولات خاطئة)</small></p>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="takeLoan()">موافق</button>
+            <button class="btn btn-sec" onclick="declareBankruptcy()">إفلاس</button>
+        </div>
+    </div>
+</div>
 
-            selectCategory: function(cat) {
-                if(this.isBusy) return;
-                
-                // تصفية الأسئلة المستعملة
-                const pool = database[cat].filter(q => !this.usedQuestions.includes(q.q));
-                
-                // في حال نفاد الأسئلة (نادر الحدوث مع 10 مراحل) نعيد استخدام الكل
-                const finalPool = pool.length > 0 ? pool : database[cat];
-                
-                // اختيار سؤال عشوائي
-                const randomQ = finalPool[Math.floor(Math.random() * finalPool.length)];
-                this.usedQuestions.push(randomQ.q);
+<div class="modal-overlay" id="gameover-modal">
+    <div class="modal-card">
+        <div class="modal-icon">💸</div>
+        <div class="modal-title" style="color:var(--error)">خسرت اللعبة</div>
+        <p class="modal-text" id="gameover-text">رصيدك سالب ولا توجد أسئلة كافية لتعويض الخسارة!</p>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="fullReset()">ابدأ من جديد</button>
+        </div>
+    </div>
+</div>
 
-                this.renderQuestion(randomQ, cat);
-                this.showScreen('game-screen');
-            },
+<div class="modal-overlay" id="reset-modal">
+    <div class="modal-card">
+        <div class="modal-title">تصفير اللعبة</div>
+        <p class="modal-text">هل أنت متأكد؟ سيتم حذف كل التقدم.</p>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="fullReset()">نعم، مسح</button>
+            <button class="btn btn-sec" onclick="closeModal('reset-modal')">إلغاء</button>
+        </div>
+    </div>
+</div>
 
-            renderQuestion: function(qData, cat) {
-                const catNames = {'history': 'تاريخ', 'geo': 'جغرافيا', 'science': 'علوم', 'general': 'ثقافة عامة'};
-                
-                document.getElementById('question-text').innerText = qData.q;
-                document.getElementById('game-cat').innerText = catNames[cat];
-                document.getElementById('game-stage').innerText = `المرحلة: ${this.stage}`;
+<div class="toast" id="toast"></div>
 
-                // === الذكاء في توليد الخيارات ===
-                // نرسل نوع السؤال (type) لجلب خيارات مشابهة
-                const options = this.generateSmartOptions(qData.a, qData.type);
-                
-                const container = document.getElementById('options-container');
-                container.innerHTML = '';
+<script src="data.js"></script>
+<script>
+    // الصوت
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(type) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if(type==='correct'){
+            osc.frequency.setValueAtTime(600, now); osc.frequency.linearRampToValueAtTime(1000, now+0.1);
+            gain.gain.linearRampToValueAtTime(0, now+0.3); osc.start(); osc.stop(now+0.3);
+        } else if(type==='wrong'){
+            osc.type='sawtooth'; osc.frequency.setValueAtTime(150, now);
+            gain.gain.linearRampToValueAtTime(0, now+0.4); osc.start(); osc.stop(now+0.4);
+        }
+    }
 
-                options.forEach(opt => {
-                    const btn = document.createElement('div');
-                    btn.className = 'option-btn';
-                    btn.innerText = opt;
-                    btn.onclick = () => this.checkAnswer(btn, opt, qData.a);
-                    container.appendChild(btn);
-                });
-            },
+    // البيانات
+    let db = [];
+    let state = { score: 0, loanUsed: false, loanActive: false, solved: [] };
+    let session = { questions: [], index: 0, stage: 1, totalQ: 3 }; 
+    
+    const categories = {
+        'القرآن الكريم': '📖', 'إسلاميات': '🕌', 'التاريخ': '⚔️',
+        'الجغرافيا': '🌍', 'العلوم': '🧬', 'الأدب والشعر': '✒️',
+        'الرياضة': '⚽', 'ثقافة عامة': '💡'
+    };
+    
+    let catLists = {};
 
-            generateSmartOptions: function(correctAnswer, type) {
-                // 1. تجميع كل الإجابات من قاعدة البيانات كاملة التي تطابق نفس "النوع"
-                let sameTypePool = [];
-                
-                Object.keys(database).forEach(cat => {
-                    database[cat].forEach(item => {
-                        // شرط: نفس النوع، وليست الإجابة الصحيحة، ولم تضاف مسبقاً
-                        if(item.type === type && item.a !== correctAnswer && !sameTypePool.includes(item.a)) {
-                            sameTypePool.push(item.a);
-                        }
-                    });
-                });
+    window.onload = function() {
+        if(typeof gameData !== 'undefined') {
+            db = gameData;
+            loadState();
+            categorizeData();
+            renderHome();
+        }
+    };
 
-                // 2. خلط قائمة الإجابات المشابهة
-                sameTypePool = sameTypePool.sort(() => 0.5 - Math.random());
+    function categorizeData() {
+        for(let k in categories) catLists[k] = [];
+        db.forEach(q => {
+            const t = ((q.category||"") + " " + (q.question||"")).toLowerCase();
+            let cat = 'ثقافة عامة';
+            if(t.includes('قرآن')||t.includes('سورة')||t.includes('آية')) cat='القرآن الكريم';
+            else if(t.includes('تاريخ')||t.includes('سيرة')||t.includes('غزوة')||t.includes('معركة')||t.includes('رئيس')) cat='التاريخ';
+            else if(t.includes('جغرافيا')||t.includes('عاصمة')||t.includes('دول')||t.includes('مدن')) cat='الجغرافيا';
+            else if(t.includes('علوم')||t.includes('فضاء')||t.includes('كيمياء')||t.includes('حيوان')||t.includes('طب')) cat='العلوم';
+            else if(t.includes('أدب')||t.includes('شعر')||t.includes('مؤلف')||t.includes('رواية')) cat='الأدب والشعر';
+            else if(t.includes('رياضة')||t.includes('كرة')||t.includes('كأس')||t.includes('لاعب')) cat='الرياضة';
+            else if(t.includes('إسلام')||t.includes('فقه')||t.includes('نبي')||t.includes('صحابي')) cat='إسلاميات';
+            if(catLists[cat]) catLists[cat].push(q.id);
+        });
+    }
 
-                // 3. اختيار 3 إجابات خاطئة
-                let distractors = sameTypePool.slice(0, 3);
+    function renderHome() {
+        const grid = document.getElementById('categories-grid');
+        grid.innerHTML = '';
+        const keys = Object.keys(categories).sort((a,b) => (a==='القرآن الكريم' ? -1 : 1));
 
-                // **حالة طوارئ**: إذا لم نجد ما يكفي من الخيارات من نفس النوع (مثلاً نوع نادر)
-                // نكمل الخيارات بإجابات عشوائية لتجنب توقف اللعبة
-                if(distractors.length < 3) {
-                    let randomBackup = [];
-                     Object.keys(database).forEach(cat => {
-                        database[cat].forEach(item => {
-                            if(item.a !== correctAnswer && !distractors.includes(item.a)) randomBackup.push(item.a);
-                        });
-                    });
-                    randomBackup = randomBackup.sort(() => 0.5 - Math.random());
-                    while(distractors.length < 3) {
-                        distractors.push(randomBackup.pop());
-                    }
-                }
+        keys.forEach(k => {
+            const allIds = catLists[k];
+            // تحديد الأسئلة المتبقية
+            const remainingIds = allIds.filter(id => !state.solved.includes(id));
+            const isDone = remainingIds.length === 0 && allIds.length > 0;
+            
+            const div = document.createElement('div');
+            // إذا مكتمل: نضيف كلاس disabled ونزيل tabindex لعدم التركيز
+            div.className = `card ${isDone ? 'disabled' : ''}`;
+            div.tabIndex = isDone ? -1 : 0;
+            
+            div.innerHTML = `
+                ${isDone ? '<div class="completed-overlay"><div class="checkmark">✔</div>مكتمل</div>' : ''}
+                <div class="card-icon">${categories[k]}</div>
+                <div class="card-title">${k}</div>
+                <div class="card-info">${remainingIds.length} متبقي / ${allIds.length}</div>
+            `;
 
-                // 4. دمج الصحيحة مع الخاطئة وخلطهم
-                return [...distractors, correctAnswer].sort(() => 0.5 - Math.random());
-            },
-
-            checkAnswer: function(btn, selected, correct) {
-                if(this.isBusy) return;
-                this.isBusy = true;
-
-                const allBtns = document.querySelectorAll('.option-btn');
-                
-                if(selected === correct) {
-                    btn.classList.add('correct');
-                    this.score += 10;
-                } else {
-                    btn.classList.add('wrong');
-                    // إظهار الصحيح
-                    allBtns.forEach(b => {
-                        if(b.innerText === correct) b.classList.add('correct');
-                    });
-                }
-
-                setTimeout(() => {
-                    this.isBusy = false;
-                    if(this.stage < this.maxStages) {
-                        this.stage++;
-                        this.updateStats();
-                        this.showScreen('category-screen');
-                    } else {
-                        this.endGame();
-                    }
-                }, 1500);
-            },
-
-            endGame: function() {
-                this.showScreen('result-screen');
-                const scoreEl = document.getElementById('final-score');
-                const msgEl = document.getElementById('result-message');
-                
-                scoreEl.innerText = this.score;
-                
-                if(this.score >= 50) {
-                    scoreEl.style.borderColor = "var(--success)";
-                    scoreEl.style.color = "var(--success)";
-                    scoreEl.style.boxShadow = "0 0 30px var(--success)";
-                    msgEl.innerHTML = "<h3 style='color:var(--success)'>🎉 مبروك! أنت عبقري 🎉</h3>";
-                } else {
-                    scoreEl.style.borderColor = "var(--error)";
-                    scoreEl.style.color = "var(--error)";
-                    scoreEl.style.boxShadow = "0 0 30px var(--error)";
-                    msgEl.innerHTML = "<h3 style='color:var(--error)'>للأسف.. حاول مرة أخرى</h3>";
-                }
-            },
-
-            updateStats: function() {
-                document.getElementById('cat-stage').innerText = `المرحلة: ${this.stage} / ${this.maxStages}`;
-                document.getElementById('cat-score').innerText = `النقاط: ${this.score}`;
-            },
-
-            showScreen: function(id) {
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
+            // التفاعل فقط إذا لم يكن مكتمل
+            if(!isDone && allIds.length > 0) {
+                div.onclick = () => startSession(k);
+                div.onkeydown = (e) => { if(e.key==='Enter') startSession(k); };
             }
-        };
-    </script>
+            // إذا مكتمل: لا يوجد حدث onclick
+            
+            grid.appendChild(div);
+        });
+        updateUI();
+        switchScreen('screen-home');
+        // تركيز على أول بطاقة مفعلة
+        setTimeout(() => { const c = document.querySelector('.card:not(.disabled)'); if(c) c.focus(); }, 100);
+    }
+
+    function startSession(catKey) {
+        const allIds = catLists[catKey];
+        const availableIds = allIds.filter(id => !state.solved.includes(id));
+
+        if(availableIds.length === 0) {
+            renderHome(); return;
+        }
+
+        // اختيار 3 أسئلة فقط
+        let count = 3;
+        if(availableIds.length < 3) count = availableIds.length;
+
+        let selectedIds = [...availableIds].sort(() => 0.5 - Math.random()).slice(0, count);
+        
+        session.questions = selectedIds.map(id => db.find(q => q.id === id));
+        session.index = 0;
+        session.totalQ = count;
+        
+        loadQuestion();
+        switchScreen('screen-game');
+    }
+
+    function loadQuestion() {
+        session.stage = session.index + 1;
+        document.getElementById('stage-badge').innerText = `المرحلة ${session.stage}`;
+        document.getElementById('q-counter').innerText = `${session.index + 1}/${session.totalQ}`;
+        
+        const q = session.questions[session.index];
+        document.getElementById('q-text').innerText = q.question;
+        
+        const grid = document.getElementById('opts-container');
+        grid.innerHTML = '';
+        
+        let opts = q.options ? [...q.options] : [q.answer];
+        opts.sort(() => 0.5 - Math.random());
+
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, opt === q.answer);
+            grid.appendChild(btn);
+        });
+        setTimeout(() => document.querySelector('.opt-btn').focus(), 100);
+    }
+
+    function checkAnswer(btn, isCorrect) {
+        document.querySelectorAll('.opt-btn').forEach(b => b.onclick = null);
+        
+        const penalty = 50; 
+        const reward = session.stage * 20;
+
+        if(isCorrect) {
+            btn.classList.add('correct');
+            playTone('correct');
+            state.score += reward;
+            state.solved.push(session.questions[session.index].id); 
+            
+            if(state.loanActive && state.score >= 0) {
+                state.loanActive = false;
+                showToast("تم سداد القرض! ✅");
+            }
+            saveState();
+            setTimeout(nextQ, 1200);
+        } else {
+            btn.classList.add('wrong');
+            playTone('wrong');
+            document.querySelectorAll('.opt-btn').forEach(b => {
+                if(b.innerText === session.questions[session.index].answer) b.classList.add('correct');
+            });
+            state.score -= penalty;
+            updateUI();
+
+            if(state.score < 0) {
+                if(!state.loanUsed) {
+                    setTimeout(() => openModal('bank-modal'), 1000);
+                } else {
+                    // هنا: التحقق من إمكانية التعويض
+                    checkBankruptcy();
+                }
+            } else {
+                setTimeout(nextQ, 2000);
+            }
+        }
+        updateUI();
+    }
+
+    function checkBankruptcy() {
+        // حساب الأسئلة المتبقية في اللعبة بالكامل (غير المحلولة)
+        let totalRemainingQs = 0;
+        for(let k in catLists) {
+            totalRemainingQs += catLists[k].filter(id => !state.solved.includes(id)).length;
+        }
+        
+        // أقصى ربح ممكن (كل سؤال بـ 60 نقطة كحد أقصى)
+        let maxPossibleGain = totalRemainingQs * 60;
+        
+        // الشرط: الدين الحالي + أقصى ربح < 0
+        if((state.score + maxPossibleGain) < 0) {
+            document.getElementById('gameover-text').innerHTML = 
+                `رصيدك: ${state.score}<br>والأسئلة المتبقية لا تكفي لتعويض الخسارة.`;
+            setTimeout(() => openModal('gameover-modal'), 1000);
+        } else {
+            setTimeout(nextQ, 2000);
+        }
+    }
+
+    function nextQ() {
+        session.index++;
+        if(session.index >= session.totalQ) {
+            showToast("🎉 مرحلة مكتملة!");
+            setTimeout(endSession, 1500);
+        } else {
+            loadQuestion();
+        }
+    }
+
+    function openModal(id) {
+        document.getElementById(id).classList.add('open');
+        document.getElementById(id).querySelector('button').focus();
+    }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    
+    function takeLoan() {
+        state.score += 150; state.loanUsed = true; state.loanActive = true;
+        updateUI(); closeModal('bank-modal');
+        showToast("تم إيداع 150 نقطة 💰");
+        setTimeout(nextQ, 1000);
+    }
+    function declareBankruptcy() { closeModal('bank-modal'); openModal('gameover-modal'); }
+    function showResetModal() { openModal('reset-modal'); }
+    
+    function fullReset() { localStorage.removeItem('gold_quiz_final_v3'); location.reload(); }
+    
+    function endSession() { renderHome(); }
+    function updateUI() {
+        const el = document.getElementById('score-display');
+        el.innerText = state.score;
+        el.style.color = state.score < 0 ? 'var(--error)' : 'var(--primary)';
+    }
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function toggleTheme() {
+        const b = document.body;
+        b.setAttribute('data-theme', b.getAttribute('data-theme')==='light'?'':'light');
+    }
+    function saveState() { localStorage.setItem('gold_quiz_final_v3', JSON.stringify(state)); }
+    function loadState() {
+        const s = localStorage.getItem('gold_quiz_final_v3');
+        if(s) state = JSON.parse(s);
+        if(!state.solved) state.solved = [];
+    }
+
+    // ريموت التلفاز
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Backspace' || e.key === 'Escape') {
+            if(document.querySelector('.modal-overlay.open')) {
+                document.querySelector('.modal-overlay.open').classList.remove('open');
+            } else if(document.getElementById('screen-game').classList.contains('active')) {
+                endSession();
+            }
+        }
+        const focusable = Array.from(document.querySelectorAll('div.card:not(.disabled), button, [tabindex="0"]'))
+                               .filter(el => el.offsetParent !== null);
+        const index = focusable.indexOf(document.activeElement);
+        let next = index;
+        if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next++;
+        if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') next--;
+        if(next >= 0 && next < focusable.length) focusable[next].focus();
+    });
+</script>
 </body>
 </html>
