@@ -6,482 +6,570 @@
     <title>الموسوعة الذهبية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;800&display=swap" rel="stylesheet">
     <style>
-        /* --- المتغيرات والألوان --- */
+        /* --- المتغيرات للألوان --- */
         :root {
-            --bg: #0f172a; --surface: #1e293b; --surface-hover: #334155;
-            --primary: #f59e0b; --text: #f1f5f9; --text-sec: #94a3b8;
-            --success: #10b981; --error: #ef4444; --loan: #8b5cf6;
-            --shadow: 0 8px 20px rgba(0,0,0,0.4); --radius: 16px;
-        }
-        [data-theme="light"] {
-            --bg: #f8fafc; --surface: #ffffff; --surface-hover: #e2e8f0;
-            --primary: #d97706; --text: #0f172a; --text-sec: #64748b;
-            --shadow: 0 4px 10px rgba(0,0,0,0.1);
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --primary: #f59e0b; /* ذهبي */
+            --text: #f1f5f9;
+            --secondary: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --loan: #8b5cf6;
+            --disabled-bg: #334155;
+            --shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
+        /* --- إعدادات عامة --- */
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; }
         
         body {
-            background-color: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif;
-            margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-            transition: background-color 0.3s;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* --- إطار التركيز (Accessibility & TV) --- */
-        *:focus-visible {
-            outline: 3px solid var(--primary); outline-offset: 4px; border-radius: 8px; z-index: 100;
+        /* --- دعم التركيز للتلفزيون (Focus) --- */
+        button:focus, .card:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 4px var(--primary);
+            border-color: var(--primary) !important;
+            z-index: 10;
         }
 
-        /* --- الهيكل --- */
+        /* --- الحاوية الرئيسية --- */
         .app-container {
-            width: 100%; max-width: 1600px; margin: 0 auto; height: 100%;
-            display: flex; flex-direction: column; padding: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
         }
 
+        /* --- الهيدر --- */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--surface); padding: 10px 25px; border-radius: var(--radius);
-            box-shadow: var(--shadow); margin-bottom: 20px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.05);
+            background: var(--surface); padding: 10px 20px;
+            border-radius: 15px; box-shadow: var(--shadow);
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
         }
 
-        .grid {
-            display: grid; gap: 20px; padding: 10px; overflow-y: auto;
-            grid-template-columns: 1fr; /* موبايل */
+        .logo { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+        
+        .score-box {
+            background: rgba(255,255,255,0.1); padding: 5px 15px;
+            border-radius: 50px; font-weight: bold; font-size: 1.2rem;
+            display: flex; align-items: center; gap: 5px;
         }
+
+        .btn-reset {
+            background: var(--error); color: white; border: none;
+            padding: 8px 20px; border-radius: 10px; font-weight: bold;
+            cursor: pointer; font-size: 1rem; margin-right: 10px;
+        }
+
+        /* --- الشاشات --- */
+        .screen { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+        .screen.active { display: flex; animation: fadein 0.5s; }
+        @keyframes fadein { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* --- الشبكة (Grid) --- */
+        .grid {
+            display: grid;
+            gap: 15px;
+            padding: 5px;
+            /* الموبايل: عمود واحد */
+            grid-template-columns: 1fr; 
+        }
+
+        /* تابلت */
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+        /* كمبيوتر وتلفاز */
         @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 
         /* --- البطاقات --- */
         .card {
-            background: var(--surface); border-radius: var(--radius); padding: 20px;
-            text-align: center; cursor: pointer; transition: 0.2s; border: 2px solid transparent;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 180px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 160px;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: 0.2s;
         }
-        
-        .card:hover:not(.disabled) {
-            transform: translateY(-5px); border-color: var(--primary); background: var(--surface-hover);
-        }
-
-        /* ستايل القفل (التصنيف المكتمل) */
-        .card.disabled {
-            background: var(--surface-hover); 
-            opacity: 0.5; 
-            cursor: default; 
-            pointer-events: none; /* يمنع النقر */
-            border-color: #334155;
-            filter: grayscale(100%);
-        }
-        
-        .completed-overlay {
-            position: absolute; inset: 0; background: rgba(16, 185, 129, 0.15);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--success); font-weight: 900; opacity: 0; transition: 0.3s;
-        }
-        .card.disabled .completed-overlay { opacity: 1; }
-        .checkmark { font-size: 3rem; margin-bottom: 5px; }
 
         .card-icon { font-size: 3.5rem; margin-bottom: 10px; }
-        .card-title { font-size: 1.3rem; font-weight: 800; }
-        .card-info { font-size: 0.9rem; color: var(--text-sec); margin-top: 5px; }
+        .card-title { font-size: 1.4rem; font-weight: bold; }
+        .card-info { font-size: 0.9rem; color: var(--secondary); margin-top: 5px; }
 
-        /* --- شاشة اللعب --- */
-        .screen { display: none; flex: 1; flex-direction: column; animation: fadeIn 0.4s ease; }
-        .screen.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .game-header { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
-        .question-box {
-            background: var(--surface); padding: 40px; border-radius: 25px;
-            text-align: center; font-size: 1.8rem; font-weight: 800; line-height: 1.6;
-            margin-bottom: 30px; flex-grow: 1; display: flex; align-items: center; justify-content: center;
-            border: 2px solid var(--surface-hover); box-shadow: var(--shadow);
+        /* --- البطاقة المقفلة (المكتملة) --- */
+        .card.locked {
+            background: var(--disabled-bg);
+            opacity: 0.5;
+            cursor: default;
+            border-color: var(--secondary);
+            pointer-events: none; /* يمنع النقر */
         }
-        
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 700px) { .options-grid { grid-template-columns: 1fr; } }
+        .card.locked .card-icon { filter: grayscale(100%); }
+        .completed-tag {
+            position: absolute; top: 10px; left: 10px;
+            background: var(--success); color: white;
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* --- شاشة السؤال --- */
+        .game-header {
+            display: flex; justify-content: space-between; margin-bottom: 20px;
+            font-size: 1.2rem; font-weight: bold; color: var(--secondary);
+        }
+
+        .question-box {
+            background: var(--surface); padding: 30px; border-radius: 20px;
+            text-align: center; font-size: 1.8rem; font-weight: 800; line-height: 1.5;
+            margin-bottom: 20px; flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow); border: 2px solid #334155;
+        }
+
+        .options-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } .question-box { font-size: 1.4rem; } }
 
         .opt-btn {
-            background: var(--surface); color: var(--text); border: 2px solid var(--surface-hover);
-            padding: 20px; border-radius: 15px; font-size: 1.3rem; font-weight: bold;
-            cursor: pointer; transition: 0.2s;
+            background: var(--surface); color: var(--text);
+            border: 2px solid #334155; padding: 20px; border-radius: 12px;
+            font-size: 1.3rem; font-weight: bold; cursor: pointer;
         }
-        .opt-btn:hover, .opt-btn:focus { background: var(--surface-hover); border-color: var(--primary); transform: scale(1.02); }
-        .opt-btn.correct { background: var(--success) !important; border-color: var(--success) !important; color: white !important; }
-        .opt-btn.wrong { background: var(--error) !important; border-color: var(--error) !important; color: white !important; opacity: 0.6; }
-
-        /* --- المودالات --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(8px);
-        }
-        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .opt-btn:hover { background: #334155; border-color: var(--primary); }
         
-        .modal-card {
-            background: var(--surface); width: 90%; max-width: 450px; padding: 30px;
-            border-radius: 25px; text-align: center; border: 1px solid var(--surface-hover);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.8); transition: 0.3s;
+        .opt-btn.correct { background: var(--success) !important; border-color: var(--success) !important; color: white; }
+        .opt-btn.wrong { background: var(--error) !important; border-color: var(--error) !important; color: white; opacity: 0.5; }
+
+        /* --- المودالات (النوافذ) --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999;
+            display: none; align-items: center; justify-content: center;
         }
-        .modal-overlay.open .modal-card { transform: scale(1); }
+        .modal-overlay.open { display: flex; }
 
-        .modal-icon { font-size: 4rem; margin-bottom: 10px; }
-        .modal-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 10px; color: var(--primary); }
-        .modal-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: var(--text-sec); }
-        .modal-actions { display: flex; gap: 10px; justify-content: center; }
-
-        .btn { padding: 12px 25px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .btn-primary { background: var(--primary); color: #000; }
-        .btn-danger { background: var(--error); color: white; }
-        .btn-sec { background: transparent; border: 2px solid var(--surface-hover); color: var(--text); }
-
-        .toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(50px);
-            background: #334155; color: white; padding: 12px 30px; border-radius: 50px;
-            opacity: 0; transition: 0.3s; font-weight: bold; z-index: 6000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .modal-box {
+            background: var(--surface); padding: 30px; border-radius: 20px;
+            width: 90%; max-width: 400px; text-align: center;
+            border: 2px solid var(--secondary); box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .modal-title { font-size: 1.8rem; color: var(--primary); margin-bottom: 15px; font-weight: bold; }
+        .modal-msg { font-size: 1.2rem; margin-bottom: 25px; line-height: 1.5; }
+        
+        .m-btn {
+            padding: 12px 30px; border-radius: 10px; border: none;
+            font-weight: bold; font-size: 1rem; cursor: pointer; margin: 5px;
+        }
+        .btn-ok { background: var(--success); color: white; }
+        .btn-no { background: transparent; border: 2px solid var(--secondary); color: var(--text); }
+
+        /* شاشة الخطأ (للتشخيص) */
+        #debug-screen {
+            position: fixed; inset: 0; background: #000; color: #f00; z-index: 10000;
+            padding: 20px; overflow: auto; display: none; font-family: monospace; font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
+<div id="debug-screen"></div>
+
 <div class="app-container">
     <div class="header">
-        <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary); display:flex; align-items:center; gap:10px;">
-            <span>💎</span> الموسوعة
-        </div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <div style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 50px; font-weight: bold;">
-                💰 <span id="score-display">0</span>
-            </div>
-            <button class="btn btn-sec" onclick="toggleTheme()" style="padding: 8px 12px;">🌗</button>
-            <button class="btn btn-danger" onclick="showResetModal()">↺ تصفير</button>
+        <div class="logo">💎 الموسوعة الذهبية</div>
+        <div style="display:flex; align-items:center;">
+            <div class="score-box">💰 <span id="score-val">0</span></div>
+            <button class="btn-reset" onclick="confirmReset()">تصفير ↺</button>
         </div>
     </div>
 
     <div id="screen-home" class="screen active">
-        <div class="grid" id="categories-grid"></div>
+        <div class="grid" id="cat-grid"></div>
     </div>
 
     <div id="screen-game" class="screen">
         <div class="game-header">
-            <button class="btn btn-sec" onclick="endSession()">🏠 خروج</button>
-            <span id="stage-badge" style="background: var(--surface-hover); padding: 5px 15px; border-radius: 15px;">المرحلة 1</span>
-            <span id="q-counter"></span>
+            <button class="m-btn btn-no" onclick="goHome()">🏠 خروج</button>
+            <span id="stage-txt">المرحلة 1</span>
+            <span id="q-count-txt"></span>
         </div>
-        <div class="question-box" id="q-text">...</div>
-        <div class="options-grid" id="opts-container"></div>
+        <div class="question-box" id="q-text">جاري التحميل...</div>
+        <div class="options-grid" id="opts-area"></div>
     </div>
 </div>
 
-<div class="modal-overlay" id="bank-modal">
-    <div class="modal-card">
-        <div class="modal-icon">🏦</div>
-        <div class="modal-title">تنبيه إفلاس!</div>
-        <p class="modal-text">رصيدك نفذ! هل تريد قرض إنقاذ بقيمة <b>150 نقطة</b>؟<br><small>(يكفي لـ 3 محاولات خاطئة)</small></p>
-        <div class="modal-actions">
-            <button class="btn btn-primary" onclick="takeLoan()">موافق</button>
-            <button class="btn btn-sec" onclick="declareBankruptcy()">إفلاس</button>
-        </div>
+<div id="modal-bank" class="modal-overlay">
+    <div class="modal-box" style="border-color: var(--loan);">
+        <div style="font-size:3rem">🏦</div>
+        <div class="modal-title" style="color:var(--loan)">تنبيه إفلاس</div>
+        <div class="modal-msg">رصيدك نفذ! هل تريد قرضاً بقيمة <b>100 نقطة</b>؟<br><small>(فرصة واحدة فقط)</small></div>
+        <button class="m-btn" style="background:var(--loan); color:white" onclick="takeLoan()">موافق</button>
+        <button class="m-btn btn-no" onclick="gameOver()">إفلاس</button>
     </div>
 </div>
 
-<div class="modal-overlay" id="gameover-modal">
-    <div class="modal-card">
-        <div class="modal-icon">💸</div>
-        <div class="modal-title" style="color:var(--error)">خسرت اللعبة</div>
-        <p class="modal-text" id="gameover-text">رصيدك سالب ولا توجد أسئلة كافية لتعويض الخسارة!</p>
-        <div class="modal-actions">
-            <button class="btn btn-danger" onclick="fullReset()">ابدأ من جديد</button>
-        </div>
+<div id="modal-loss" class="modal-overlay">
+    <div class="modal-box" style="border-color: var(--error);">
+        <div style="font-size:3rem">💸</div>
+        <div class="modal-title" style="color:var(--error)">انتهت اللعبة</div>
+        <div class="modal-msg">لم يعد لديك رصيد ولا أسئلة كافية للتعويض.</div>
+        <button class="m-btn btn-no" onclick="fullReset()">ابدأ من جديد</button>
     </div>
 </div>
-
-<div class="modal-overlay" id="reset-modal">
-    <div class="modal-card">
-        <div class="modal-title">تصفير اللعبة</div>
-        <p class="modal-text">هل أنت متأكد؟ سيتم حذف كل التقدم.</p>
-        <div class="modal-actions">
-            <button class="btn btn-danger" onclick="fullReset()">نعم، مسح</button>
-            <button class="btn btn-sec" onclick="closeModal('reset-modal')">إلغاء</button>
-        </div>
-    </div>
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script src="data.js"></script>
-<script>
-    // الصوت
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playTone(type) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        const now = audioCtx.currentTime;
-        if(type==='correct'){
-            osc.frequency.setValueAtTime(600, now); osc.frequency.linearRampToValueAtTime(1000, now+0.1);
-            gain.gain.linearRampToValueAtTime(0, now+0.3); osc.start(); osc.stop(now+0.3);
-        } else if(type==='wrong'){
-            osc.type='sawtooth'; osc.frequency.setValueAtTime(150, now);
-            gain.gain.linearRampToValueAtTime(0, now+0.4); osc.start(); osc.stop(now+0.4);
-        }
-    }
 
-    // البيانات
-    let db = [];
-    let state = { score: 0, loanUsed: false, loanActive: false, solved: [] };
-    let session = { questions: [], index: 0, stage: 1, totalQ: 3 }; 
-    
-    const categories = {
+<script>
+    // --- معالجة الأخطاء (للتلفزيون) ---
+    window.onerror = function(msg, url, line) {
+        var d = document.getElementById('debug-screen');
+        d.style.display = 'block';
+        d.innerHTML += "Error: " + msg + "<br>Line: " + line + "<br><hr>";
+    };
+
+    // --- المتغيرات العامة (ES5) ---
+    var db = []; // قاعدة البيانات
+    var state = {
+        score: 0,
+        loanUsed: false,
+        solved: [] // مصفوفة لتخزين معرفات الأسئلة المحلولة
+    };
+    var currentSession = {
+        questions: [],
+        index: 0,
+        total: 3 // ثابتة: 3 أسئلة لكل جولة
+    };
+
+    // تعريف التصنيفات يدوياً لضمان الترتيب
+    var catKeys = [
+        'القرآن الكريم', 'إسلاميات', 'التاريخ', 'الجغرافيا',
+        'العلوم', 'الأدب والشعر', 'الرياضة', 'ثقافة عامة'
+    ];
+    var catIcons = {
         'القرآن الكريم': '📖', 'إسلاميات': '🕌', 'التاريخ': '⚔️',
         'الجغرافيا': '🌍', 'العلوم': '🧬', 'الأدب والشعر': '✒️',
         'الرياضة': '⚽', 'ثقافة عامة': '💡'
     };
-    
-    let catLists = {};
 
+    // --- عند التحميل ---
     window.onload = function() {
-        if(typeof gameData !== 'undefined') {
-            db = gameData;
-            loadState();
-            categorizeData();
-            renderHome();
+        try {
+            if (typeof gameData !== 'undefined') {
+                db = gameData;
+                loadData();
+                renderHome();
+                setupRemoteControl();
+            } else {
+                alert("لم يتم العثور على ملف data.js");
+            }
+        } catch (e) {
+            alert("حدث خطأ في التشغيل: " + e.message);
         }
     };
 
-    function categorizeData() {
-        for(let k in categories) catLists[k] = [];
-        db.forEach(q => {
-            const t = ((q.category||"") + " " + (q.question||"")).toLowerCase();
-            let cat = 'ثقافة عامة';
-            if(t.includes('قرآن')||t.includes('سورة')||t.includes('آية')) cat='القرآن الكريم';
-            else if(t.includes('تاريخ')||t.includes('سيرة')||t.includes('غزوة')||t.includes('معركة')||t.includes('رئيس')) cat='التاريخ';
-            else if(t.includes('جغرافيا')||t.includes('عاصمة')||t.includes('دول')||t.includes('مدن')) cat='الجغرافيا';
-            else if(t.includes('علوم')||t.includes('فضاء')||t.includes('كيمياء')||t.includes('حيوان')||t.includes('طب')) cat='العلوم';
-            else if(t.includes('أدب')||t.includes('شعر')||t.includes('مؤلف')||t.includes('رواية')) cat='الأدب والشعر';
-            else if(t.includes('رياضة')||t.includes('كرة')||t.includes('كأس')||t.includes('لاعب')) cat='الرياضة';
-            else if(t.includes('إسلام')||t.includes('فقه')||t.includes('نبي')||t.includes('صحابي')) cat='إسلاميات';
-            if(catLists[cat]) catLists[cat].push(q.id);
-        });
+    // --- الوظائف الأساسية ---
+    function renderHome() {
+        var grid = document.getElementById('cat-grid');
+        grid.innerHTML = '';
+
+        for (var i = 0; i < catKeys.length; i++) {
+            var key = catKeys[i];
+            // حساب الأسئلة المتبقية في هذا التصنيف
+            // ملاحظة: نستخدم دالة تصفية بسيطة
+            var totalInCat = 0;
+            var remainingInCat = 0;
+            
+            for (var j = 0; j < db.length; j++) {
+                var q = db[j];
+                var qCat = getCategory(q);
+                if (qCat === key) {
+                    totalInCat++;
+                    if (state.solved.indexOf(q.id) === -1) {
+                        remainingInCat++;
+                    }
+                }
+            }
+
+            var btn = document.createElement('div');
+            btn.className = 'card';
+            
+            // حالة الإغلاق (إذا لم يتبق أسئلة)
+            if (remainingInCat === 0 && totalInCat > 0) {
+                btn.className += ' locked';
+                btn.innerHTML = '<div class="completed-tag">مكتمل ✔</div>';
+                // إزالة tabindex لمنع التركيز بالريموت
+                btn.removeAttribute('tabindex'); 
+            } else {
+                btn.tabIndex = 0; // قابل للتركيز
+                // حل مشكلة Scope في الـ Loop (ES5 Closure)
+                (function(k) {
+                    btn.onclick = function() { startSession(k); };
+                    btn.onkeydown = function(e) { if(e.key === 'Enter') startSession(k); };
+                })(key);
+            }
+
+            btn.innerHTML += 
+                '<div class="card-icon">' + catIcons[key] + '</div>' +
+                '<div class="card-title">' + key + '</div>' +
+                '<div class="card-info">' + remainingInCat + ' متبقي</div>';
+
+            grid.appendChild(btn);
+        }
+        updateScore();
+        showScreen('screen-home');
+        
+        // تركيز مبدئي لأول بطاقة مفتوحة
+        setTimeout(function(){
+            var firstCard = document.querySelector('.card:not(.locked)');
+            if(firstCard) firstCard.focus();
+        }, 200);
     }
 
-    function renderHome() {
-        const grid = document.getElementById('categories-grid');
-        grid.innerHTML = '';
-        const keys = Object.keys(categories).sort((a,b) => (a==='القرآن الكريم' ? -1 : 1));
-
-        keys.forEach(k => {
-            const allIds = catLists[k];
-            // تحديد الأسئلة المتبقية
-            const remainingIds = allIds.filter(id => !state.solved.includes(id));
-            const isDone = remainingIds.length === 0 && allIds.length > 0;
-            
-            const div = document.createElement('div');
-            // إذا مكتمل: نضيف كلاس disabled ونزيل tabindex لعدم التركيز
-            div.className = `card ${isDone ? 'disabled' : ''}`;
-            div.tabIndex = isDone ? -1 : 0;
-            
-            div.innerHTML = `
-                ${isDone ? '<div class="completed-overlay"><div class="checkmark">✔</div>مكتمل</div>' : ''}
-                <div class="card-icon">${categories[k]}</div>
-                <div class="card-title">${k}</div>
-                <div class="card-info">${remainingIds.length} متبقي / ${allIds.length}</div>
-            `;
-
-            // التفاعل فقط إذا لم يكن مكتمل
-            if(!isDone && allIds.length > 0) {
-                div.onclick = () => startSession(k);
-                div.onkeydown = (e) => { if(e.key==='Enter') startSession(k); };
-            }
-            // إذا مكتمل: لا يوجد حدث onclick
-            
-            grid.appendChild(div);
-        });
-        updateUI();
-        switchScreen('screen-home');
-        // تركيز على أول بطاقة مفعلة
-        setTimeout(() => { const c = document.querySelector('.card:not(.disabled)'); if(c) c.focus(); }, 100);
+    function getCategory(q) {
+        var t = (q.category + " " + q.question).toLowerCase();
+        if (t.indexOf('قرآن') > -1 || t.indexOf('سورة') > -1 || t.indexOf('آية') > -1) return 'القرآن الكريم';
+        if (t.indexOf('تاريخ') > -1 || t.indexOf('سيرة') > -1 || t.indexOf('غزوة') > -1) return 'التاريخ';
+        if (t.indexOf('جغرافيا') > -1 || t.indexOf('عاصمة') > -1 || t.indexOf('مدن') > -1) return 'الجغرافيا';
+        if (t.indexOf('علوم') > -1 || t.indexOf('فضاء') > -1 || t.indexOf('طب') > -1) return 'العلوم';
+        if (t.indexOf('أدب') > -1 || t.indexOf('شعر') > -1 || t.indexOf('مؤلف') > -1) return 'الأدب والشعر';
+        if (t.indexOf('رياضة') > -1 || t.indexOf('كرة') > -1 || t.indexOf('كأس') > -1) return 'الرياضة';
+        if (t.indexOf('إسلام') > -1 || t.indexOf('فقه') > -1 || t.indexOf('نبي') > -1) return 'إسلاميات';
+        return 'ثقافة عامة';
     }
 
     function startSession(catKey) {
-        const allIds = catLists[catKey];
-        const availableIds = allIds.filter(id => !state.solved.includes(id));
-
-        if(availableIds.length === 0) {
-            renderHome(); return;
+        // جمع الأسئلة المتاحة في هذا التصنيف
+        var available = [];
+        for (var i = 0; i < db.length; i++) {
+            if (getCategory(db[i]) === catKey && state.solved.indexOf(db[i].id) === -1) {
+                available.push(db[i]);
+            }
         }
 
-        // اختيار 3 أسئلة فقط
-        let count = 3;
-        if(availableIds.length < 3) count = availableIds.length;
+        if (available.length === 0) return;
 
-        let selectedIds = [...availableIds].sort(() => 0.5 - Math.random()).slice(0, count);
-        
-        session.questions = selectedIds.map(id => db.find(q => q.id === id));
-        session.index = 0;
-        session.totalQ = count;
+        // خلط واختيار 3 أسئلة
+        available.sort(function() { return 0.5 - Math.random(); });
+        currentSession.questions = available.slice(0, 3);
+        currentSession.index = 0;
         
         loadQuestion();
-        switchScreen('screen-game');
+        showScreen('screen-game');
     }
 
     function loadQuestion() {
-        session.stage = session.index + 1;
-        document.getElementById('stage-badge').innerText = `المرحلة ${session.stage}`;
-        document.getElementById('q-counter').innerText = `${session.index + 1}/${session.totalQ}`;
+        var q = currentSession.questions[currentSession.index];
+        var stage = currentSession.index + 1;
         
-        const q = session.questions[session.index];
+        document.getElementById('stage-txt').innerText = "المرحلة " + stage;
+        document.getElementById('q-count-txt').innerText = stage + "/3";
         document.getElementById('q-text').innerText = q.question;
-        
-        const grid = document.getElementById('opts-container');
-        grid.innerHTML = '';
-        
-        let opts = q.options ? [...q.options] : [q.answer];
-        opts.sort(() => 0.5 - Math.random());
 
-        opts.forEach(opt => {
-            const btn = document.createElement('button');
+        var area = document.getElementById('opts-area');
+        area.innerHTML = '';
+
+        // نسخ الخيارات وخلطها
+        var opts = q.options.slice();
+        opts.sort(function() { return 0.5 - Math.random(); });
+
+        for (var i = 0; i < opts.length; i++) {
+            var btn = document.createElement('button');
             btn.className = 'opt-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(btn, opt === q.answer);
-            grid.appendChild(btn);
-        });
-        setTimeout(() => document.querySelector('.opt-btn').focus(), 100);
+            btn.innerText = opts[i];
+            
+            (function(opt, button) {
+                button.onclick = function() { checkAnswer(button, opt === q.answer); };
+            })(opts[i], btn);
+
+            area.appendChild(btn);
+        }
+        
+        // تركيز على أول خيار
+        setTimeout(function(){
+            var firstOpt = area.querySelector('button');
+            if(firstOpt) firstOpt.focus();
+        }, 100);
     }
 
     function checkAnswer(btn, isCorrect) {
-        document.querySelectorAll('.opt-btn').forEach(b => b.onclick = null);
+        // تعطيل الأزرار
+        var all = document.querySelectorAll('.opt-btn');
+        for (var i = 0; i < all.length; i++) all[i].onclick = null;
+
+        var q = currentSession.questions[currentSession.index];
         
-        const penalty = 50; 
-        const reward = session.stage * 20;
-
-        if(isCorrect) {
-            btn.classList.add('correct');
-            playTone('correct');
-            state.score += reward;
-            state.solved.push(session.questions[session.index].id); 
-            
-            if(state.loanActive && state.score >= 0) {
-                state.loanActive = false;
-                showToast("تم سداد القرض! ✅");
-            }
-            saveState();
-            setTimeout(nextQ, 1200);
+        if (isCorrect) {
+            btn.className += ' correct';
+            state.score += 50; // جائزة ثابتة 50
+            state.solved.push(q.id); // قفل السؤال للأبد
+            saveData();
+            setTimeout(nextQuestion, 1000);
         } else {
-            btn.classList.add('wrong');
-            playTone('wrong');
-            document.querySelectorAll('.opt-btn').forEach(b => {
-                if(b.innerText === session.questions[session.index].answer) b.classList.add('correct');
-            });
-            state.score -= penalty;
-            updateUI();
+            btn.className += ' wrong';
+            // إظهار الصحيح
+            for (var j = 0; j < all.length; j++) {
+                if (all[j].innerText === q.answer) all[j].className += ' correct';
+            }
+            
+            // الخصم
+            state.score -= 50; // خصم ثابت
+            updateScore();
 
-            if(state.score < 0) {
-                if(!state.loanUsed) {
-                    setTimeout(() => openModal('bank-modal'), 1000);
+            // فحص الخسارة
+            if (state.score < 0) {
+                if (!state.loanUsed) {
+                    setTimeout(function(){ showModal('modal-bank'); }, 1000);
                 } else {
-                    // هنا: التحقق من إمكانية التعويض
+                    // هل يمكن التعويض؟
                     checkBankruptcy();
                 }
             } else {
-                setTimeout(nextQ, 2000);
+                setTimeout(nextQuestion, 2000);
             }
         }
-        updateUI();
+        updateScore();
     }
 
     function checkBankruptcy() {
-        // حساب الأسئلة المتبقية في اللعبة بالكامل (غير المحلولة)
-        let totalRemainingQs = 0;
-        for(let k in catLists) {
-            totalRemainingQs += catLists[k].filter(id => !state.solved.includes(id)).length;
+        // حساب عدد الأسئلة المتبقية في اللعبة ككل
+        var remainingTotal = 0;
+        for (var i = 0; i < db.length; i++) {
+            if (state.solved.indexOf(db[i].id) === -1) remainingTotal++;
         }
         
-        // أقصى ربح ممكن (كل سؤال بـ 60 نقطة كحد أقصى)
-        let maxPossibleGain = totalRemainingQs * 60;
-        
-        // الشرط: الدين الحالي + أقصى ربح < 0
-        if((state.score + maxPossibleGain) < 0) {
-            document.getElementById('gameover-text').innerHTML = 
-                `رصيدك: ${state.score}<br>والأسئلة المتبقية لا تكفي لتعويض الخسارة.`;
-            setTimeout(() => openModal('gameover-modal'), 1000);
+        // إذا كان (الرصيد الحالي + كل ما يمكن ربحه) < 0 ... إفلاس
+        var maxPotential = remainingTotal * 50;
+        if ((state.score + maxPotential) < 0) {
+            setTimeout(gameOver, 1000);
         } else {
-            setTimeout(nextQ, 2000);
+            setTimeout(nextQuestion, 2000);
         }
     }
 
-    function nextQ() {
-        session.index++;
-        if(session.index >= session.totalQ) {
-            showToast("🎉 مرحلة مكتملة!");
-            setTimeout(endSession, 1500);
+    function nextQuestion() {
+        currentSession.index++;
+        if (currentSession.index >= currentSession.questions.length) {
+            // انتهت الجولة (3 أسئلة)
+            goHome();
         } else {
             loadQuestion();
         }
     }
 
-    function openModal(id) {
-        document.getElementById(id).classList.add('open');
+    // --- البنك والإفلاس ---
+    function takeLoan() {
+        state.score += 100; // القرض 100
+        state.loanUsed = true;
+        updateScore();
+        hideModal('modal-bank');
+        setTimeout(nextQuestion, 500);
+    }
+
+    function gameOver() {
+        hideModal('modal-bank');
+        showModal('modal-loss');
+    }
+
+    function fullReset() {
+        localStorage.removeItem('gold_v_final');
+        location.reload();
+    }
+
+    function confirmReset() {
+        if(confirm("هل أنت متأكد من مسح كل شيء؟")) fullReset();
+    }
+
+    // --- المساعدة ---
+    function showScreen(id) {
+        var screens = document.querySelectorAll('.screen');
+        for (var i = 0; i < screens.length; i++) screens[i].className = 'screen';
+        document.getElementById(id).className = 'screen active';
+    }
+
+    function showModal(id) {
+        document.getElementById(id).className = 'modal-overlay open';
         document.getElementById(id).querySelector('button').focus();
     }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    
-    function takeLoan() {
-        state.score += 150; state.loanUsed = true; state.loanActive = true;
-        updateUI(); closeModal('bank-modal');
-        showToast("تم إيداع 150 نقطة 💰");
-        setTimeout(nextQ, 1000);
+
+    function hideModal(id) {
+        document.getElementById(id).className = 'modal-overlay';
     }
-    function declareBankruptcy() { closeModal('bank-modal'); openModal('gameover-modal'); }
-    function showResetModal() { openModal('reset-modal'); }
-    
-    function fullReset() { localStorage.removeItem('gold_quiz_final_v3'); location.reload(); }
-    
-    function endSession() { renderHome(); }
-    function updateUI() {
-        const el = document.getElementById('score-display');
+
+    function updateScore() {
+        var el = document.getElementById('score-val');
         el.innerText = state.score;
         el.style.color = state.score < 0 ? 'var(--error)' : 'var(--primary)';
     }
-    function switchScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-    function toggleTheme() {
-        const b = document.body;
-        b.setAttribute('data-theme', b.getAttribute('data-theme')==='light'?'':'light');
-    }
-    function saveState() { localStorage.setItem('gold_quiz_final_v3', JSON.stringify(state)); }
-    function loadState() {
-        const s = localStorage.getItem('gold_quiz_final_v3');
-        if(s) state = JSON.parse(s);
-        if(!state.solved) state.solved = [];
+
+    function goHome() {
+        renderHome();
     }
 
-    // ريموت التلفاز
-    document.addEventListener('keydown', (e) => {
-        if(e.key === 'Backspace' || e.key === 'Escape') {
-            if(document.querySelector('.modal-overlay.open')) {
-                document.querySelector('.modal-overlay.open').classList.remove('open');
-            } else if(document.getElementById('screen-game').classList.contains('active')) {
-                endSession();
-            }
+    function saveData() {
+        localStorage.setItem('gold_v_final', JSON.stringify(state));
+    }
+
+    function loadData() {
+        var s = localStorage.getItem('gold_v_final');
+        if (s) {
+            state = JSON.parse(s);
+            if (!state.solved) state.solved = [];
         }
-        const focusable = Array.from(document.querySelectorAll('div.card:not(.disabled), button, [tabindex="0"]'))
-                               .filter(el => el.offsetParent !== null);
-        const index = focusable.indexOf(document.activeElement);
-        let next = index;
-        if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next++;
-        if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') next--;
-        if(next >= 0 && next < focusable.length) focusable[next].focus();
-    });
+    }
+
+    // --- دعم الريموت كنترول (الأسهم) ---
+    function setupRemoteControl() {
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' || e.key === 'Escape') {
+                var modals = document.querySelectorAll('.modal-overlay.open');
+                if (modals.length > 0) {
+                    for(var m=0; m<modals.length; m++) modals[m].className = 'modal-overlay';
+                } else if (document.getElementById('screen-game').className.indexOf('active') > -1) {
+                    goHome();
+                }
+            }
+
+            // التنقل
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.key) > -1) {
+                var focusable = document.querySelectorAll('button, [tabindex="0"]');
+                var arr = Array.prototype.slice.call(focusable).filter(function(el) {
+                    return el.offsetParent !== null; // العناصر الظاهرة فقط
+                });
+                
+                var index = arr.indexOf(document.activeElement);
+                var next = index;
+
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next++;
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next--;
+
+                if (next >= 0 && next < arr.length) {
+                    arr[next].focus();
+                    e.preventDefault();
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
